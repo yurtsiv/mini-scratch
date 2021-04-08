@@ -1,0 +1,16 @@
+.resizeable-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.resizeable-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.resize-bar {
+  height: 10px;
+  background-color: red;
+  cursor: pointer;
+}

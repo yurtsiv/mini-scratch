@@ -1,13 +1,11 @@
-import React from "react";
-import "./App.css";
 import { RecoilRoot } from "recoil";
 
-import { ResizeBar } from "components/ResizeBar";
+import { Layout } from "./Layout";
 
 function App() {
   return (
     <RecoilRoot>
-      <ResizeBar />
+      <Layout />
     </RecoilRoot>
   );
 }
