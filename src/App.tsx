@@ -1,14 +1,14 @@
-import React from 'react';
-import { RecoilRoot } from 'recoil';
+import React from 'react'
+import { RecoilRoot } from 'recoil'
 
-import { Layout } from './Layout';
+import { Layout } from './layout'
 
 function App() {
   return (
     <RecoilRoot>
       <Layout />
     </RecoilRoot>
-  );
+  )
 }
 
-export default App;
+export default App

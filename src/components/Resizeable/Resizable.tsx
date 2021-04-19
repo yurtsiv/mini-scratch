@@ -1,15 +1,21 @@
+import { clamp } from 'lib/numbers'
 import React, { ReactChild, useCallback, useRef, useState } from 'react'
 
 import './styles.css'
 
-const MIN_HEIGH = 30
-
 type Props = {
+  maxHeight: number
+  minHeight: number
   children: ReactChild
   className?: string
 }
 
-export function Resizeable({ children, className }: Props) {
+export function Resizeable({
+  children,
+  className = '',
+  maxHeight,
+  minHeight,
+}: Props) {
   const [height, setHeight] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -18,11 +24,11 @@ export function Resizeable({ children, className }: Props) {
       const touchY = e.touches[0].clientY
       const { top } = containerRef.current?.getBoundingClientRect() as DOMRect
 
-      const height = Math.max(MIN_HEIGH, touchY - top)
+      const height = clamp(minHeight, maxHeight, touchY - top)
 
       setHeight(height)
     },
-    [setHeight]
+    [maxHeight, minHeight, setHeight]
   )
 
   return (
@@ -32,9 +38,7 @@ export function Resizeable({ children, className }: Props) {
       style={{ height: height ? height : undefined }}
     >
       <div className="resizeable-content">{children}</div>
-      <div className="resize-bar">
-        <div className="move-bar" onTouchMove={handleBarMove} />
-      </div>
+      <div className="resize-bar" onTouchMove={handleBarMove} />
     </div>
   )
 }
