@@ -1,5 +1,5 @@
+import { Resizeable } from 'components/Resizeable';
 import React from 'react';
-import {Resizeable} from 'components/Resizeable';
 
 export function Layout() {
   return (

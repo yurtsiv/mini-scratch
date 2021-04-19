@@ -1,19 +1,7 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "google"
-  ],
+  "extends": "vazco",
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "env": {
-    "browser": true
-  },
   "rules": {
-    "require-jsdoc": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "quotes": ["error", "single"]
   }
 }
