@@ -12,16 +12,14 @@
 .resize-bar {
   height: 2px;
   background-color: var(--light-grey);
-  cursor: pointer;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.resize-bar::after {
-  content: " ";
-  width: 10px;
-  height: 10px;
-  background-color: blue;
-  position: absolute;
-  left: 50%;
-  top: -5px;
+.resize-bar .move-bar {
+  cursor: pointer;
+  width: 40px;
+  height: 8px;
+  background-color: var(--grey);
 }
