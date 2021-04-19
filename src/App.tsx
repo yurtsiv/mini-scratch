@@ -1,6 +1,6 @@
-import { RecoilRoot } from "recoil";
+import {RecoilRoot} from 'recoil';
 
-import { Layout } from "./Layout";
+import {Layout} from './Layout';
 
 function App() {
   return (

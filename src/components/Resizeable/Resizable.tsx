@@ -1,6 +1,6 @@
-import React, { ReactChild, useCallback, useRef, useState } from "react";
+import React, {ReactChild, useCallback, useRef, useState} from 'react';
 
-import "./styles.css";
+import './styles.css';
 
 const MIN_HEIGH = 30;
 
@@ -9,27 +9,27 @@ type Props = {
   className?: string;
 };
 
-export function Resizeable({ children, className }: Props) {
+export function Resizeable({children, className}: Props) {
   const [height, setHeight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleBarMove = useCallback(
-    (e) => {
-      const touchY = e.touches[0].clientY;
-      const { top } = containerRef.current?.getBoundingClientRect() as DOMRect;
+      (e) => {
+        const touchY = e.touches[0].clientY;
+        const {top} = containerRef.current?.getBoundingClientRect() as DOMRect;
 
-      const height = Math.max(MIN_HEIGH, touchY - top);
+        const height = Math.max(MIN_HEIGH, touchY - top);
 
-      setHeight(height);
-    },
-    [setHeight]
+        setHeight(height);
+      },
+      [setHeight]
   );
 
   return (
     <div
       ref={containerRef}
-      className="resizeable-container"
-      style={{ height: height ? height : undefined }}
+      className={`resizeable-container ${className}`}
+      style={{height: height ? height : undefined}}
     >
       <div className="resizeable-content">{children}</div>
       <div className="resize-bar" onTouchMove={handleBarMove} />
