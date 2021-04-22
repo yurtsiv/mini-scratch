@@ -25,7 +25,7 @@ export function Layout() {
       >
         <svg width="100%" height="100%">
           <GoTo />
-          <GoTo />
+          {/* <GoTo /> */}
         </svg>
       </Resizeable>
       <div

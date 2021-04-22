@@ -13,10 +13,10 @@
 .resize-bar {
   cursor: pointer;
   width: 40px;
-  height: 8px;
+  height: 12px;
   background-color: var(--grey);
   position: absolute;
-  bottom: -5px;
+  bottom: -6px;
   right: 0;
   left: 0;
   margin: auto;
