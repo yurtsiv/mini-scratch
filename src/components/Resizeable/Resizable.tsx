@@ -1,12 +1,12 @@
 import { clamp } from 'lib/numbers'
-import React, { ReactChild, useCallback, useRef, useState } from 'react'
+import React, { ReactNode, useCallback, useRef, useState } from 'react'
 
 import './styles.css'
 
 type Props = {
   maxHeight: number
   minHeight: number
-  children: ReactChild
+  children: ReactNode
   className?: string
 }
 

@@ -1,3 +1,4 @@
+import { GoTo } from 'components/Blocks/GoTo'
 import { Resizeable } from 'components/Resizeable'
 import React from 'react'
 
@@ -22,7 +23,10 @@ export function Layout() {
         }
         minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
       >
-        <h1>Hello there</h1>
+        <svg width="100%" height="100%">
+          <GoTo />
+          <GoTo />
+        </svg>
       </Resizeable>
       <div
         style={{
