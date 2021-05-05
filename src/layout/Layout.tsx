@@ -1,5 +1,5 @@
-import { GoTo } from 'components/Blocks/GoTo'
 import { Resizeable } from 'components/Resizeable'
+import { ScriptEditor } from 'components/ScriptEditor'
 import React from 'react'
 
 const MIN_RESIZEABLE_CONTENT_HEIGHT = 10
@@ -23,10 +23,7 @@ export function Layout() {
         }
         minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
       >
-        <svg width="100%" height="100%">
-          <GoTo />
-          <GoTo />
-        </svg>
+        <ScriptEditor />
       </Resizeable>
       <div
         style={{

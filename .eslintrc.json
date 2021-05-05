@@ -1,9 +1,12 @@
 {
   "extends": "vazco",
   "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "quotes": ["error", "single"],
     "prettier/prettier": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error"
   }
 }

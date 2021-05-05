@@ -17,3 +17,7 @@ code {
   width: 100vw;
   height: 100vh;
 }
+
+svg {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+}
