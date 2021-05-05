@@ -33,7 +33,6 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
     return ReactDOM.createPortal(
       <path
         ref={ref}
-        style={{ cursor: 'pointer' }}
         stroke={block.active ? 'red' : ''}
         transform={`translate(${draggingCoords.x}, ${draggingCoords.y})`}
         fill="#4C97FF"
@@ -49,7 +48,6 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
   if (block.next) {
     return (
       <g
-        style={{ cursor: 'pointer' }}
         stroke={block.active ? 'red' : ''}
         transform={`translate(${coords.x}, ${coords.y})`}
       >
