@@ -42,8 +42,7 @@ export function useBlock({ setEditorState, path }: Params): Return {
       setDraggingCoords(coords)
       setDragging(true)
     },
-    // eslint-disable-next-line
-    [touchPointWithinElemRef, setEditorState, path]
+    [touchPointWithinElemRef]
   )
 
   const deactivate = useCallback(() => {
@@ -66,8 +65,7 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
       setDragging(false)
     }
-    // eslint-disable-next-line
-  }, [])
+  }, [setDragging, setEditorState, path])
 
   useEffect(() => {
     function onTouchMove(e: TouchEvent) {
@@ -93,6 +91,10 @@ export function useBlock({ setEditorState, path }: Params): Return {
       deactivate()
     }
 
+    function onTouchCancel() {
+      setDragging(false)
+    }
+
     const svgPath = elementRef.current
 
     console.log('ADDING LISTENERS', svgPath)
@@ -100,6 +102,7 @@ export function useBlock({ setEditorState, path }: Params): Return {
       svgPath.addEventListener('touchmove', onTouchMove)
       svgPath.addEventListener('touchstart', onTouchStart)
       svgPath.addEventListener('touchend', onTouchEnd)
+      svgPath.addEventListener('touchcancel', onTouchCancel)
     }
 
     return () => {
@@ -108,10 +111,10 @@ export function useBlock({ setEditorState, path }: Params): Return {
         svgPath.removeEventListener('touchmove', onTouchMove)
         svgPath.removeEventListener('touchstart', onTouchStart)
         svgPath.removeEventListener('touchend', onTouchEnd)
+        svgPath.addEventListener('touchcancel', onTouchCancel)
       }
     }
-    // eslint-disable-next-line
-  }, [elementRef])
+  }, [elementRef, activate, deactivate])
 
   return {
     ref: elementRef,
