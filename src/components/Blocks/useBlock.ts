@@ -1,3 +1,4 @@
+import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset } from 'lodash'
 import { useCallback, useRef, useState, useEffect, RefObject } from 'react'
@@ -6,7 +7,7 @@ import { Block } from 'state/scriptEditor'
 
 type Params = {
   setEditorState: SetterOrUpdater<Block[]>
-  path: string[]
+  path: string
 }
 
 type Return = {
@@ -16,10 +17,13 @@ type Return = {
 }
 
 export function useBlock({ setEditorState, path }: Params): Return {
+  const [
+    draggingCoordsRef,
+    draggingCoords,
+    setDraggingCoords,
+  ] = useRefState<Coords>({ x: -1, y: -1 })
   const touchPointWithinElemRef = useRef({ x: -1, y: -1 })
   const [dragging, setDragging] = useState(false)
-  const [draggingCoords, setDraggingCoords] = useState({ x: -1, y: -1 })
-  const draggingCoordsRef = useRef({ x: -1, y: -1 })
 
   const elementRef = useRef<SVGPathElement>(null)
 
@@ -37,20 +41,20 @@ export function useBlock({ setEditorState, path }: Params): Return {
         x: touchX - touchPointWithinElemRef.current.x,
         y: touchY - touchPointWithinElemRef.current.y,
       }
-      // TODO: move to a func
-      draggingCoordsRef.current = coords
       setDraggingCoords(coords)
       setDragging(true)
     },
-    [touchPointWithinElemRef]
+    [touchPointWithinElemRef, setDraggingCoords]
   )
 
   const deactivate = useCallback(() => {
-    if (path.length > 1) {
+    const nestedBlock = path.length > 1
+    if (nestedBlock) {
+      console.log('DEACTIVATING', path)
       setEditorState((stateOrig) => {
         const state = cloneDeep(stateOrig)
         const block = get(state, path) as Block
-        block.coords = draggingCoordsRef.current
+        block.coords = draggingCoordsRef.current as Coords
         state.push(block)
         unset(state, path)
         return state
@@ -59,17 +63,23 @@ export function useBlock({ setEditorState, path }: Params): Return {
       setEditorState((stateOrig) => {
         const state = cloneDeep(stateOrig)
         const block = get(state, path) as Block
-        block.coords = draggingCoordsRef.current
+        block.coords = draggingCoordsRef.current as Coords
         return state
       })
 
       setDragging(false)
     }
-  }, [setDragging, setEditorState, path])
+  }, [setDragging, path, setEditorState, draggingCoordsRef])
+
+  useEffect(() => {
+    return () => {
+      console.log('COMPONENT DESTROYED', path)
+    }
+  }, [path])
 
   useEffect(() => {
     function onTouchMove(e: TouchEvent) {
-      console.log('TOUCH MOVE')
+      console.log('TOUCH MOVE', path)
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
       const coords = {
@@ -77,17 +87,16 @@ export function useBlock({ setEditorState, path }: Params): Return {
         y: touchY - touchPointWithinElemRef.current.y,
       }
 
-      draggingCoordsRef.current = coords
       setDraggingCoords(coords)
     }
 
     function onTouchStart(e: TouchEvent) {
-      console.log('TOUCH START')
+      console.log('TOUCH START', path)
       activate(e)
     }
 
     function onTouchEnd() {
-      console.log('TOUCH END')
+      console.log('TOUCH END', path)
       deactivate()
     }
 
@@ -97,8 +106,9 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
     const svgPath = elementRef.current
 
-    console.log('ADDING LISTENERS', svgPath)
+    console.log('USE EFFECT', path)
     if (svgPath) {
+      console.log('REGISTERING LISTENERS', path)
       svgPath.addEventListener('touchmove', onTouchMove)
       svgPath.addEventListener('touchstart', onTouchStart)
       svgPath.addEventListener('touchend', onTouchEnd)
@@ -107,14 +117,14 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
     return () => {
       if (svgPath) {
-        console.log('REMOVING LISTENERS')
+        console.log('REMOVING LISTENERS', path)
         svgPath.removeEventListener('touchmove', onTouchMove)
         svgPath.removeEventListener('touchstart', onTouchStart)
         svgPath.removeEventListener('touchend', onTouchEnd)
         svgPath.addEventListener('touchcancel', onTouchCancel)
       }
     }
-  }, [elementRef, activate, deactivate])
+  }, [activate, deactivate, path, setDraggingCoords, elementRef])
 
   return {
     ref: elementRef,

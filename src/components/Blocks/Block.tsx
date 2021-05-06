@@ -7,7 +7,7 @@ import { Block as BlockT, EditorState } from 'state/scriptEditor'
 import { useBlock } from './useBlock'
 
 type Props = {
-  path: string[]
+  path: string
   setEditorState: SetterOrUpdater<EditorState>
   editorState: EditorState
   editorRef: RefObject<SVGElement>
@@ -38,38 +38,30 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
     setEditorState,
   })
 
-  console.log('DRAGGING', dragging)
-
-  if (!editorRef.current) {
-    return null
-  }
-
   const coords = dragging ? draggingCoords : block.coords
 
-  const renderResult = block.next ? (
+  const renderResult = (
     <g
       stroke={dragging ? 'red' : ''}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
       <BlockPath ref={ref} />
-      <Block
-        editorRef={editorRef}
-        editorState={editorState}
-        path={[...path, 'next']}
-        setEditorState={setEditorState}
-      />
+      {block.next ? (
+        <Block
+          editorRef={editorRef}
+          editorState={editorState}
+          path={`${path}.next`}
+          setEditorState={setEditorState}
+        />
+      ) : null}
     </g>
-  ) : (
-    <BlockPath
-      ref={ref}
-      stroke={dragging ? 'red' : ''}
-      transform={`translate(${coords.x}, ${coords.y})`}
-    />
   )
 
   if (dragging && path.length > 1) {
+    console.log('RENDERING PORTAL', path)
     return ReactDOM.createPortal(renderResult, editorRef.current as SVGElement)
   }
 
+  console.log('RENDERING USUAL', path)
   return renderResult
 }
