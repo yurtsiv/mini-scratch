@@ -2,7 +2,7 @@ import { findJoinPath, overlapsWithBlock } from 'lib/geometry'
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset } from 'lodash'
-import { useCallback, useRef, useState, useEffect, RefObject } from 'react'
+import { useCallback, useRef, useEffect, RefObject } from 'react'
 import { SetterOrUpdater } from 'recoil'
 import { Block, EditorState } from 'state/scriptEditor'
 
@@ -13,27 +13,30 @@ type Params = {
 }
 
 type Return = {
-  draggingCoords: Coords
+  draggingCoords: Coords | null
   ref: RefObject<SVGPathElement>
-  dragging: boolean
 }
 
-function suggestJoin(
+function suggestJoinPath(
   editorState: EditorState,
-  // setEditorState: SetterOrUpdater<Block[]>,
-  draggingCoords: Coords
-) {
+  draggingCoords: Coords,
+  skipLast: boolean
+): string | null {
   const targetBlockIdx = editorState.findIndex((block) =>
-    overlapsWithBlock(block, draggingCoords)
+    overlapsWithBlock(block, draggingCoords, skipLast)
   )
 
   if (targetBlockIdx !== -1) {
     const targetBlock = editorState[targetBlockIdx]
-    console.log('FOUND TARGET', targetBlock)
-
-    const p = findJoinPath(`${targetBlockIdx}`, targetBlock, draggingCoords)
-    console.log('JOIN PATH', p)
+    return findJoinPath(
+      `${targetBlockIdx}`,
+      targetBlock,
+      draggingCoords,
+      skipLast
+    )
   }
+
+  return null
 }
 
 export function useBlock({
@@ -45,15 +48,17 @@ export function useBlock({
     draggingCoordsRef,
     draggingCoords,
     setDraggingCoords,
-  ] = useRefState<Coords>({ x: -1, y: -1 })
+  ] = useRefState<Coords | null>(null)
   const touchPointWithinElemRef = useRef({ x: -1, y: -1 })
-  const [dragging, setDragging] = useState(false)
 
   const elementRef = useRef<SVGPathElement>(null)
 
   useEffect(() => {
-    suggestJoin(editorState, draggingCoords)
-  }, [draggingCoords, editorState])
+    if (draggingCoords) {
+      const nestedBlock = path.length > 1
+      suggestJoinPath(editorState, draggingCoords, nestedBlock)
+    }
+  }, [draggingCoords, editorState, path])
 
   const activate = useCallback(
     (e: TouchEvent) => {
@@ -70,7 +75,6 @@ export function useBlock({
         y: touchY - touchPointWithinElemRef.current.y,
       }
       setDraggingCoords(coords)
-      setDragging(true)
     },
     [touchPointWithinElemRef, setDraggingCoords]
   )
@@ -94,9 +98,9 @@ export function useBlock({
         return state
       })
 
-      setDragging(false)
+      setDraggingCoords(null)
     }
-  }, [setDragging, path, setEditorState, draggingCoordsRef])
+  }, [setDraggingCoords, path, setEditorState, draggingCoordsRef])
 
   useEffect(() => {
     return () => {
@@ -127,7 +131,7 @@ export function useBlock({
     }
 
     function onTouchCancel() {
-      setDragging(false)
+      deactivate()
     }
 
     const svgPath = elementRef.current
@@ -152,6 +156,5 @@ export function useBlock({
   return {
     ref: elementRef,
     draggingCoords,
-    dragging,
   }
 }

@@ -33,17 +33,17 @@ const BlockPath = React.forwardRef(BlockPathC)
 export function Block({ editorRef, editorState, path, setEditorState }: Props) {
   const block = get(editorState, path) as BlockT
 
-  const { dragging, draggingCoords, ref } = useBlock({
+  const { draggingCoords, ref } = useBlock({
     editorState,
     path,
     setEditorState,
   })
 
-  const coords = dragging ? draggingCoords : block.coords
+  const coords = draggingCoords ? draggingCoords : block.coords
 
   const renderResult = (
     <g
-      stroke={dragging ? 'red' : ''}
+      stroke={draggingCoords ? 'red' : ''}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
       <BlockPath ref={ref} />
@@ -58,7 +58,7 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
     </g>
   )
 
-  if (dragging && path.length > 1) {
+  if (draggingCoords && path.length > 1) {
     return ReactDOM.createPortal(renderResult, editorRef.current as SVGElement)
   }
 
