@@ -34,6 +34,7 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
   const block = get(editorState, path) as BlockT
 
   const { dragging, draggingCoords, ref } = useBlock({
+    editorState,
     path,
     setEditorState,
   })
@@ -58,10 +59,8 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
   )
 
   if (dragging && path.length > 1) {
-    console.log('RENDERING PORTAL', path)
     return ReactDOM.createPortal(renderResult, editorRef.current as SVGElement)
   }
 
-  console.log('RENDERING USUAL', path)
   return renderResult
 }

@@ -1,11 +1,13 @@
+import { findJoinPath, overlapsWithBlock } from 'lib/geometry'
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset } from 'lodash'
 import { useCallback, useRef, useState, useEffect, RefObject } from 'react'
 import { SetterOrUpdater } from 'recoil'
-import { Block } from 'state/scriptEditor'
+import { Block, EditorState } from 'state/scriptEditor'
 
 type Params = {
+  editorState: EditorState
   setEditorState: SetterOrUpdater<Block[]>
   path: string
 }
@@ -16,7 +18,29 @@ type Return = {
   dragging: boolean
 }
 
-export function useBlock({ setEditorState, path }: Params): Return {
+function suggestJoin(
+  editorState: EditorState,
+  // setEditorState: SetterOrUpdater<Block[]>,
+  draggingCoords: Coords
+) {
+  const targetBlockIdx = editorState.findIndex((block) =>
+    overlapsWithBlock(block, draggingCoords)
+  )
+
+  if (targetBlockIdx !== -1) {
+    const targetBlock = editorState[targetBlockIdx]
+    console.log('FOUND TARGET', targetBlock)
+
+    const p = findJoinPath(`${targetBlockIdx}`, targetBlock, draggingCoords)
+    console.log('JOIN PATH', p)
+  }
+}
+
+export function useBlock({
+  editorState,
+  setEditorState,
+  path,
+}: Params): Return {
   const [
     draggingCoordsRef,
     draggingCoords,
@@ -26,6 +50,10 @@ export function useBlock({ setEditorState, path }: Params): Return {
   const [dragging, setDragging] = useState(false)
 
   const elementRef = useRef<SVGPathElement>(null)
+
+  useEffect(() => {
+    suggestJoin(editorState, draggingCoords)
+  }, [draggingCoords, editorState])
 
   const activate = useCallback(
     (e: TouchEvent) => {
@@ -50,7 +78,6 @@ export function useBlock({ setEditorState, path }: Params): Return {
   const deactivate = useCallback(() => {
     const nestedBlock = path.length > 1
     if (nestedBlock) {
-      console.log('DEACTIVATING', path)
       setEditorState((stateOrig) => {
         const state = cloneDeep(stateOrig)
         const block = get(state, path) as Block
@@ -79,7 +106,6 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
   useEffect(() => {
     function onTouchMove(e: TouchEvent) {
-      console.log('TOUCH MOVE', path)
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
       const coords = {
@@ -106,9 +132,7 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
     const svgPath = elementRef.current
 
-    console.log('USE EFFECT', path)
     if (svgPath) {
-      console.log('REGISTERING LISTENERS', path)
       svgPath.addEventListener('touchmove', onTouchMove)
       svgPath.addEventListener('touchstart', onTouchStart)
       svgPath.addEventListener('touchend', onTouchEnd)
@@ -117,7 +141,6 @@ export function useBlock({ setEditorState, path }: Params): Return {
 
     return () => {
       if (svgPath) {
-        console.log('REMOVING LISTENERS', path)
         svgPath.removeEventListener('touchmove', onTouchMove)
         svgPath.removeEventListener('touchstart', onTouchStart)
         svgPath.removeEventListener('touchend', onTouchEnd)
