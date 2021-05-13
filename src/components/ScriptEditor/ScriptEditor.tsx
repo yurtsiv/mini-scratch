@@ -1,11 +1,11 @@
 import { Block } from 'components/Blocks/Block'
 import React, { useRef } from 'react'
 import { useRecoilState } from 'recoil'
-import { scriptEditorState } from 'state/scriptEditor'
+import { blocksState } from 'state/scriptEditor'
 
 export function ScriptEditor() {
   const editorRef = useRef(null)
-  const [state, setState] = useRecoilState(scriptEditorState)
+  const [state, setState] = useRecoilState(blocksState)
   console.log('EDITOR STATE', state)
 
   return (
@@ -14,8 +14,8 @@ export function ScriptEditor() {
         <Block
           editorRef={editorRef}
           key={block.id}
-          editorState={state}
-          setEditorState={setState}
+          blocksState={state}
+          setBlocksState={setState}
           path={`${i}`}
         />
       ))}

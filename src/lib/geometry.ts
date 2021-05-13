@@ -61,13 +61,18 @@ export function findJoinPath(
     }
 
     if (next.type !== BlockType.Ghost) {
-      const dist = Math.abs(prevY - coords.y)
-      if (dist < BLOCK_HEIGHT + OVERLAP_BOX_HEIGHT) {
+      const d1 = Math.abs(prevY - coords.y)
+      if (d1 < BLOCK_HEIGHT / 2) {
         return path
+      }
+
+      const d2 = Math.abs(prevY + BLOCK_HEIGHT - coords.y)
+      if (d2 < BLOCK_HEIGHT / 2) {
+        return `${path}.next`
       }
     }
 
-    prevY += next?.coords.y + BLOCK_HEIGHT
+    prevY += BLOCK_HEIGHT
     path += '.next'
     next = next.next
   }

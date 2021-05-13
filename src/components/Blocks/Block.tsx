@@ -2,14 +2,14 @@ import { get } from 'lodash'
 import React, { ForwardedRef, RefObject, SVGProps } from 'react'
 import ReactDOM from 'react-dom'
 import { SetterOrUpdater } from 'recoil'
-import { Block as BlockT, EditorState } from 'state/scriptEditor'
+import { Block as BlockT, BlockType, BlocksState } from 'state/scriptEditor'
 
 import { useBlock } from './useBlock'
 
 type Props = {
   path: string
-  setEditorState: SetterOrUpdater<EditorState>
-  editorState: EditorState
+  setBlocksState: SetterOrUpdater<BlocksState>
+  blocksState: BlocksState
   editorRef: RefObject<SVGElement>
 }
 
@@ -19,7 +19,7 @@ function BlockPathC(
 ) {
   return (
     <path
-      fill="#4C97FF"
+      onDragStart={console.log}
       fillOpacity="1"
       d="m 0,4 A 4,4 0 0,1 4,0 H 12 c 2,0 3,1 4,2 l 4,4 c 1,1 2,2 4,2 h 12 c 2,0 3,-1 4,-2 l 4,-4 c 1,-1 2,-2 4,-2 H 145.3670997619629 a 4,4 0 0,1 4,4 v 40  a 4,4 0 0,1 -4,4 H 48   c -2,0 -3,1 -4,2 l -4,4 c -1,1 -2,2 -4,2 h -12 c -2,0 -3,-1 -4,-2 l -4,-4 c -1,-1 -2,-2 -4,-2 H 4 a 4,4 0 0,1 -4,-4 z"
       ref={ref}
@@ -30,14 +30,16 @@ function BlockPathC(
 
 const BlockPath = React.forwardRef(BlockPathC)
 
-export function Block({ editorRef, editorState, path, setEditorState }: Props) {
-  const block = get(editorState, path) as BlockT
+export function Block({ editorRef, blocksState, path, setBlocksState }: Props) {
+  const block = get(blocksState, path) as BlockT
 
   const { draggingCoords, ref } = useBlock({
-    editorState,
+    blocksState,
     path,
-    setEditorState,
+    setBlocksState,
   })
+
+  // console.log('RENDERING', block, draggingCoords, path)
 
   const coords = draggingCoords ? draggingCoords : block.coords
 
@@ -46,13 +48,16 @@ export function Block({ editorRef, editorState, path, setEditorState }: Props) {
       stroke={draggingCoords ? 'red' : ''}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
-      <BlockPath ref={ref} />
+      <BlockPath
+        ref={ref}
+        fill={block.type === BlockType.Ghost ? '#CCC' : '#4C97FF'}
+      />
       {block.next ? (
         <Block
           editorRef={editorRef}
-          editorState={editorState}
+          blocksState={blocksState}
           path={`${path}.next`}
-          setEditorState={setEditorState}
+          setBlocksState={setBlocksState}
         />
       ) : null}
     </g>
