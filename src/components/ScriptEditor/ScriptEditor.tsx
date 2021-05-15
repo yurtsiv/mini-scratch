@@ -17,6 +17,7 @@ export function ScriptEditor() {
           blocksState={state}
           setBlocksState={setState}
           path={`${i}`}
+          offset={null}
         />
       ))}
     </svg>

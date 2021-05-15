@@ -2,8 +2,9 @@ import { BLOCK_HEIGHT } from 'lib/const'
 import { Coords } from 'lib/types'
 import { atom } from 'recoil'
 
+export type BlockPath = string
+
 export enum BlockType {
-  Ghost,
   Regular,
 }
 
@@ -16,11 +17,17 @@ export type Block = {
 
 export type BlocksState = Block[]
 
-export type DraggingState = boolean
+export type DraggingState = {
+  isDragging: boolean
+  draggedBlockPath: BlockPath
+}
 
 export const draggingState = atom<DraggingState>({
   key: 'scriptEditorDraggingState',
-  default: false,
+  default: {
+    isDragging: false,
+    draggedBlockPath: '',
+  },
 })
 
 export const blocksState = atom<BlocksState>({

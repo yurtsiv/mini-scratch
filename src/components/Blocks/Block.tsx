@@ -1,16 +1,20 @@
+import { BLOCK_HEIGHT } from 'lib/const'
+import { Coords } from 'lib/types'
 import { get } from 'lodash'
+import { off } from 'node:process'
 import React, { ForwardedRef, RefObject, SVGProps } from 'react'
 import ReactDOM from 'react-dom'
 import { SetterOrUpdater } from 'recoil'
-import { Block as BlockT, BlockType, BlocksState } from 'state/scriptEditor'
+import { Block as BlockT, BlocksState } from 'state/scriptEditor'
 
-import { useBlock } from './useBlock'
+import { useBlock, DropDir } from './useBlock'
 
 type Props = {
   path: string
   setBlocksState: SetterOrUpdater<BlocksState>
   blocksState: BlocksState
   editorRef: RefObject<SVGElement>
+  offset: Coords | null
 }
 
 function BlockPathC(
@@ -30,27 +34,41 @@ function BlockPathC(
 
 const BlockPath = React.forwardRef(BlockPathC)
 
-export function Block({ editorRef, blocksState, path, setBlocksState }: Props) {
+export function Block({
+  editorRef,
+  blocksState,
+  offset,
+  path,
+  setBlocksState,
+}: Props) {
   const block = get(blocksState, path) as BlockT
 
-  const { draggingCoords, ref } = useBlock({
+  const { draggingCoords, ref, suggestDrop } = useBlock({
     blocksState,
     path,
     setBlocksState,
   })
 
-  // console.log('RENDERING', block, draggingCoords, path)
+  const coords = draggingCoords ? { ...draggingCoords } : { ...block.coords }
 
-  const coords = draggingCoords ? draggingCoords : block.coords
+  if (offset && !draggingCoords) {
+    coords.x += offset.x
+    coords.y += offset.y
+  }
+
+  const suggestTop = suggestDrop === DropDir.Top
+  const suggestBottom = suggestDrop === DropDir.Bottom
 
   const renderResult = (
     <g
       stroke={draggingCoords ? 'red' : ''}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
+      {suggestTop && <BlockPath fill="#CCC" />}
       <BlockPath
         ref={ref}
-        fill={block.type === BlockType.Ghost ? '#CCC' : '#4C97FF'}
+        fill="#4C97FF"
+        transform={suggestTop ? `translate(0, ${BLOCK_HEIGHT})` : ''}
       />
       {block.next ? (
         <Block
@@ -58,6 +76,7 @@ export function Block({ editorRef, blocksState, path, setBlocksState }: Props) {
           blocksState={blocksState}
           path={`${path}.next`}
           setBlocksState={setBlocksState}
+          offset={suggestTop ? { x: 0, y: BLOCK_HEIGHT } : null}
         />
       ) : null}
     </g>
