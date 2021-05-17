@@ -1,13 +1,14 @@
+/* eslint-disable complexity */
+
 import { BLOCK_HEIGHT } from 'lib/const'
 import { Coords } from 'lib/types'
 import { get } from 'lodash'
-import { off } from 'node:process'
 import React, { ForwardedRef, RefObject, SVGProps } from 'react'
 import ReactDOM from 'react-dom'
 import { SetterOrUpdater } from 'recoil'
-import { Block as BlockT, BlocksState } from 'state/scriptEditor'
+import { Block as BlockT, BlocksState, DropDir } from 'state/scriptEditor'
 
-import { useBlock, DropDir } from './useBlock'
+import { useBlock } from './useBlock'
 
 type Props = {
   path: string
@@ -49,7 +50,14 @@ export function Block({
     setBlocksState,
   })
 
-  const coords = draggingCoords ? { ...draggingCoords } : { ...block.coords }
+  const coords = draggingCoords
+    ? { ...draggingCoords }
+    : block.coords
+    ? { ...block.coords }
+    : {
+        x: 0,
+        y: BLOCK_HEIGHT,
+      }
 
   if (offset && !draggingCoords) {
     coords.x += offset.x
@@ -79,6 +87,9 @@ export function Block({
           offset={suggestTop ? { x: 0, y: BLOCK_HEIGHT } : null}
         />
       ) : null}
+      {suggestBottom && (
+        <BlockPath fill="#CCC" transform={`translate(0, ${BLOCK_HEIGHT})`} />
+      )}
     </g>
   )
 

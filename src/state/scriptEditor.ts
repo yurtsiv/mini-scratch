@@ -1,6 +1,10 @@
-import { BLOCK_HEIGHT } from 'lib/const'
 import { Coords } from 'lib/types'
 import { atom } from 'recoil'
+
+export enum DropDir {
+  Top,
+  Bottom,
+}
 
 export type BlockPath = string
 
@@ -10,7 +14,7 @@ export enum BlockType {
 
 export type Block = {
   id: number
-  coords: Coords
+  coords?: Coords
   type: BlockType
   next?: Block
 }
@@ -43,17 +47,9 @@ export const blocksState = atom<BlocksState>({
       next: {
         id: 2,
         type: BlockType.Regular,
-        coords: {
-          x: 0,
-          y: BLOCK_HEIGHT,
-        },
         next: {
           id: 3,
           type: BlockType.Regular,
-          coords: {
-            x: 0,
-            y: BLOCK_HEIGHT,
-          },
         },
       },
     },

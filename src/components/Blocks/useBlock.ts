@@ -1,25 +1,21 @@
 import { BLOCK_HEIGHT } from 'lib/const'
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
-import { cloneDeep, get, set, unset } from 'lodash'
-import { useRef, useEffect, RefObject, useState, useMemo } from 'react'
+import { cloneDeep, get, unset, set } from 'lodash'
+import { useRef, useEffect, RefObject, useMemo } from 'react'
 import { SetterOrUpdater, useRecoilState } from 'recoil'
 import {
   Block,
   BlocksState,
   draggingState,
   BlockPath,
+  DropDir,
 } from 'state/scriptEditor'
 
 type Params = {
   blocksState: BlocksState
   setBlocksState: SetterOrUpdater<Block[]>
   path: string
-}
-
-export enum DropDir {
-  Top,
-  Bottom,
 }
 
 type Return = {
@@ -29,19 +25,23 @@ type Return = {
 }
 
 const dragListeners: any = {}
+let dropInfo: { dropDir: DropDir; blockPath: BlockPath } | null = null
 
 function useSuggestDrop({
   path,
   elementRef,
+  setBlocksState,
 }: {
   path: BlockPath
   elementRef: RefObject<SVGPathElement>
+  setBlocksState: SetterOrUpdater<Block[]>
 }) {
   const [
     suggestDropRef,
     suggestDrop,
     setSuggestDrop,
   ] = useRefState<null | DropDir>(null)
+
   const [{ isDragging, draggedBlockPath }, setDraggingState] = useRecoilState(
     draggingState
   )
@@ -52,21 +52,25 @@ function useSuggestDrop({
     }
 
     function onTouchMove(draggedBlockCoords: Coords) {
+      console.log('TOUCH MOVE')
       const currBlockCoords = elementRef.current?.getBoundingClientRect() as DOMRect
-      const currBlockY = suggestDropRef.current
-        ? currBlockCoords.y + BLOCK_HEIGHT
-        : currBlockCoords.y
+      const currBlockY =
+        suggestDropRef.current === null
+          ? currBlockCoords.y
+          : currBlockCoords.y - BLOCK_HEIGHT
 
-      console.log(suggestDropRef)
-      if (
-        Math.abs(draggedBlockCoords.y - currBlockY) <= BLOCK_HEIGHT / 2 - 10 &&
-        !suggestDropRef.current
-      ) {
-        console.log('SETTING')
+      const isCloseEnough =
+        Math.abs(draggedBlockCoords.y - currBlockY) <= BLOCK_HEIGHT / 2 - 5
+      if (isCloseEnough && suggestDropRef.current === null) {
         setSuggestDrop(DropDir.Top)
-      } else if (suggestDropRef.current !== null) {
-        console.log('UNSETTING')
+
+        dropInfo = {
+          dropDir: DropDir.Top,
+          blockPath: path,
+        }
+      } else if (!isCloseEnough && suggestDropRef.current !== null) {
         setSuggestDrop(null)
+        dropInfo = null
       }
     }
 
@@ -74,28 +78,74 @@ function useSuggestDrop({
     dragListeners[listenerKey] = onTouchMove
 
     return () => {
-      setSuggestDrop(null)
       delete dragListeners[listenerKey]
+      setSuggestDrop(null)
+      dropInfo = null
     }
   }, [
+    setBlocksState,
     isDragging,
     setSuggestDrop,
     suggestDropRef,
     elementRef,
     draggedBlockPath,
     path,
+    setDraggingState,
   ])
 
   const { onDragStart, onDragEnd } = useMemo(
     () => ({
       onDragStart: () => {
-        setDraggingState({ isDragging: true, draggedBlockPath: path })
+        setDraggingState({
+          isDragging: true,
+          draggedBlockPath: path,
+        })
       },
       onDragEnd: () => {
-        setDraggingState({ isDragging: false, draggedBlockPath: '' })
+        console.log('DRAG END', dropInfo)
+        setDraggingState({
+          isDragging: false,
+          draggedBlockPath: '',
+        })
+
+        if (!dropInfo) {
+          return false
+        }
+
+        setBlocksState((origState) => {
+          const state = cloneDeep(origState)
+
+          const currBlock = get(state, path)
+          let lastBlockInCurrentGroup = currBlock
+          while (lastBlockInCurrentGroup.next) {
+            lastBlockInCurrentGroup = currBlock.next
+          }
+
+          const destinationBlock = get(state, dropInfo?.blockPath ?? '')
+
+          unset(state, path)
+
+          if (dropInfo?.dropDir === DropDir.Top) {
+            if (destinationBlock.coords) {
+              currBlock.coords = destinationBlock.coords
+              destinationBlock.coords = null
+            } else {
+              currBlock.coords = null
+            }
+
+            lastBlockInCurrentGroup.next = destinationBlock
+            set(state, dropInfo.blockPath, currBlock)
+          } else {
+            destinationBlock.next = currBlock
+          }
+
+          return state.filter(Boolean)
+        })
+
+        return true
       },
     }),
-    [setDraggingState, path]
+    [setDraggingState, setBlocksState, path]
   )
 
   return {
@@ -105,11 +155,7 @@ function useSuggestDrop({
   }
 }
 
-export function useBlock({
-  blocksState,
-  setBlocksState,
-  path,
-}: Params): Return {
+export function useBlock({ setBlocksState, path }: Params): Return {
   const [
     draggingCoordsRef,
     draggingCoords,
@@ -122,6 +168,7 @@ export function useBlock({
   const { onDragStart, onDragEnd, suggestDrop } = useSuggestDrop({
     path,
     elementRef,
+    setBlocksState,
   })
 
   useEffect(() => {
@@ -158,7 +205,12 @@ export function useBlock({
     }
 
     function onTouchEnd() {
-      onDragEnd()
+      const dropped = onDragEnd()
+
+      if (dropped) {
+        setDraggingCoords(null)
+        return
+      }
 
       const nestedBlock = path.split('.').length > 1
       // create new block group
