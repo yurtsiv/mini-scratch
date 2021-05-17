@@ -2,7 +2,7 @@ import { BLOCK_HEIGHT } from 'lib/const'
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset, set } from 'lodash'
-import { useRef, useEffect, RefObject, useMemo } from 'react'
+import { useRef, useEffect, useLayoutEffect, RefObject, useMemo } from 'react'
 import { SetterOrUpdater, useRecoilState } from 'recoil'
 import {
   Block,
@@ -14,6 +14,7 @@ import {
 
 type Params = {
   blocksState: BlocksState
+  block: Block
   setBlocksState: SetterOrUpdater<Block[]>
   path: string
 }
@@ -26,6 +27,23 @@ type Return = {
 
 const dragListeners: any = {}
 let dropInfo: { dropDir: DropDir; blockPath: BlockPath } | null = null
+
+function getSuggestDropDir(
+  draggedBlockCoords: Coords,
+  targetBlockCoords: Coords,
+  suggestBottom: boolean
+): DropDir | null {
+  const isCloseEnough =
+    Math.abs(draggedBlockCoords.y - targetBlockCoords.y) <=
+      BLOCK_HEIGHT / 2 - 5 &&
+    Math.abs(draggedBlockCoords.x - targetBlockCoords.x) <= 40
+
+  if (!isCloseEnough && !suggestBottom) {
+    return null
+  }
+
+  return DropDir.Top
+}
 
 function useSuggestDrop({
   path,
@@ -52,23 +70,23 @@ function useSuggestDrop({
     }
 
     function onTouchMove(draggedBlockCoords: Coords) {
-      console.log('TOUCH MOVE')
       const currBlockCoords = elementRef.current?.getBoundingClientRect() as DOMRect
-      const currBlockY =
+      const suggestDropDir = getSuggestDropDir(
+        draggedBlockCoords,
         suggestDropRef.current === null
-          ? currBlockCoords.y
-          : currBlockCoords.y - BLOCK_HEIGHT
+          ? currBlockCoords
+          : { x: currBlockCoords.x, y: currBlockCoords.y - BLOCK_HEIGHT },
+        false
+      )
 
-      const isCloseEnough =
-        Math.abs(draggedBlockCoords.y - currBlockY) <= BLOCK_HEIGHT / 2 - 5
-      if (isCloseEnough && suggestDropRef.current === null) {
+      if (suggestDropDir !== null && suggestDropRef.current === null) {
         setSuggestDrop(DropDir.Top)
 
         dropInfo = {
           dropDir: DropDir.Top,
           blockPath: path,
         }
-      } else if (!isCloseEnough && suggestDropRef.current !== null) {
+      } else if (suggestDropDir === null && suggestDropRef.current !== null) {
         setSuggestDrop(null)
         dropInfo = null
       }
@@ -102,7 +120,6 @@ function useSuggestDrop({
         })
       },
       onDragEnd: () => {
-        console.log('DRAG END', dropInfo)
         setDraggingState({
           isDragging: false,
           draggedBlockPath: '',
@@ -155,7 +172,7 @@ function useSuggestDrop({
   }
 }
 
-export function useBlock({ setBlocksState, path }: Params): Return {
+export function useBlock({ block, setBlocksState, path }: Params): Return {
   const [
     draggingCoordsRef,
     draggingCoords,
@@ -171,7 +188,7 @@ export function useBlock({ setBlocksState, path }: Params): Return {
     setBlocksState,
   })
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function onTouchMove(e: TouchEvent) {
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
@@ -239,21 +256,22 @@ export function useBlock({ setBlocksState, path }: Params): Return {
       onTouchEnd()
     }
 
+    setTimeout(() => {
+      if (elementRef.current) {
+        elementRef.current.addEventListener('touchmove', onTouchMove)
+        elementRef.current.addEventListener('touchstart', onTouchStart)
+        elementRef.current.addEventListener('touchend', onTouchEnd)
+        elementRef.current.addEventListener('touchcancel', onTouchCancel)
+      }
+    }, 0)
+
     const svgPath = elementRef.current
-
-    if (svgPath) {
-      svgPath.addEventListener('touchmove', onTouchMove)
-      svgPath.addEventListener('touchstart', onTouchStart)
-      svgPath.addEventListener('touchend', onTouchEnd)
-      svgPath.addEventListener('touchcancel', onTouchCancel)
-    }
-
     return () => {
       if (svgPath) {
         svgPath.removeEventListener('touchmove', onTouchMove)
         svgPath.removeEventListener('touchstart', onTouchStart)
         svgPath.removeEventListener('touchend', onTouchEnd)
-        svgPath.addEventListener('touchcancel', onTouchCancel)
+        svgPath.removeEventListener('touchcancel', onTouchCancel)
       }
     }
   }, [
@@ -263,7 +281,7 @@ export function useBlock({ setBlocksState, path }: Params): Return {
     draggingCoordsRef,
     path,
     setDraggingCoords,
-    elementRef,
+    block.id,
   ])
 
   return {

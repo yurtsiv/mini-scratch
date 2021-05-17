@@ -45,6 +45,7 @@ export function Block({
   const block = get(blocksState, path) as BlockT
 
   const { draggingCoords, ref, suggestDrop } = useBlock({
+    block,
     blocksState,
     path,
     setBlocksState,
