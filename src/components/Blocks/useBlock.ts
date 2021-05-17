@@ -40,7 +40,8 @@ function getSuggestDropDir(
   if (
     xCloseEnough &&
     firstBlockInTheGroup &&
-    Math.abs(yDist) <= BLOCK_HEIGHT / 2 - 5
+    yDist >= -BLOCK_HEIGHT &&
+    yDist <= BLOCK_HEIGHT / 2 - 5
   ) {
     return DropDir.Top
   }
@@ -160,18 +161,19 @@ function useSuggestDrop({
           unset(state, path)
 
           if (dropInfo?.dropDir === DropDir.Top) {
-            if (destinationBlock.coords) {
-              currBlock.coords = destinationBlock.coords
-              destinationBlock.coords = null
-            } else {
-              currBlock.coords = null
+            currBlock.coords = {
+              x: destinationBlock.coords.x,
+              y: destinationBlock.coords.y - BLOCK_HEIGHT,
             }
 
+            unset(destinationBlock, 'coords')
             lastBlockInCurrentGroup.next = destinationBlock
             set(state, dropInfo.blockPath, currBlock)
           } else {
-            currBlock.coords = null
-            lastBlockInCurrentGroup.next = destinationBlock.next
+            unset(currBlock, 'coords')
+            if (destinationBlock.next) {
+              lastBlockInCurrentGroup.next = destinationBlock.next
+            }
             destinationBlock.next = currBlock
           }
 
@@ -197,7 +199,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     draggingCoords,
     setDraggingCoords,
   ] = useRefState<Coords | null>(null)
-  const touchPointWithinElemRef = useRef<Coords>({ x: -1, y: -1 })
+  const touchPointWithinElemRef = useRef<Coords | null>(null)
 
   const elementRef = useRef<SVGPathElement>(null)
 
@@ -212,9 +214,10 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     function onTouchMove(e: TouchEvent) {
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
+      const touchPointWithinElem = touchPointWithinElemRef.current as Coords
       const coords = {
-        x: touchX - touchPointWithinElemRef.current.x,
-        y: touchY - touchPointWithinElemRef.current.y,
+        x: touchX - touchPointWithinElem.x,
+        y: touchY - touchPointWithinElem.y,
       }
 
       setDraggingCoords(coords)
@@ -224,18 +227,25 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     }
 
     function onTouchStart(e: TouchEvent) {
+      // sometimes this function is called twice
+      if (touchPointWithinElemRef.current) {
+        return
+      }
+
       onDragStart()
       const elemPos = (e.target as SVGPathElement).getBoundingClientRect()
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
-      touchPointWithinElemRef.current = {
+      const touchPointWithinElem = {
         x: touchX - elemPos.x,
         y: touchY - elemPos.y,
       }
 
+      touchPointWithinElemRef.current = touchPointWithinElem
+
       const coords = {
-        x: touchX - touchPointWithinElemRef.current.x,
-        y: touchY - touchPointWithinElemRef.current.y,
+        x: touchX - touchPointWithinElem.x,
+        y: touchY - touchPointWithinElem.y,
       }
 
       setDraggingCoords(coords)
@@ -244,6 +254,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     function onTouchEnd() {
       const dropped = onDragEnd()
 
+      touchPointWithinElemRef.current = null
       if (dropped) {
         setDraggingCoords(null)
         return
@@ -301,7 +312,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     draggingCoordsRef,
     path,
     setDraggingCoords,
-    block.id,
+    block,
   ])
 
   return {

@@ -68,21 +68,15 @@ export function Block({
   const suggestTop = suggestDrop === DropDir.Top
   const suggestBottom = suggestDrop === DropDir.Bottom
 
-  if (suggestBottom) {
-    console.log('suggestingBottom', path)
-  }
-
   const renderResult = (
     <g
       stroke={draggingCoords ? 'red' : ''}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
-      {suggestTop && <BlockPath fill="#CCC" />}
-      <BlockPath
-        ref={ref}
-        fill="#4C97FF"
-        transform={suggestTop ? `translate(0, ${BLOCK_HEIGHT})` : ''}
-      />
+      {suggestTop && (
+        <BlockPath fill="#CCC" transform={`translate(0, -${BLOCK_HEIGHT})`} />
+      )}
+      <BlockPath ref={ref} fill="#4C97FF" />
       {suggestBottom && (
         <BlockPath fill="#CCC" transform={`translate(0, ${BLOCK_HEIGHT})`} />
       )}
@@ -92,9 +86,7 @@ export function Block({
           blocksState={blocksState}
           path={`${path}.next`}
           setBlocksState={setBlocksState}
-          offset={
-            suggestTop || suggestBottom ? { x: 0, y: BLOCK_HEIGHT } : null
-          }
+          offset={suggestBottom ? { x: 0, y: BLOCK_HEIGHT } : null}
         />
       ) : null}
     </g>
