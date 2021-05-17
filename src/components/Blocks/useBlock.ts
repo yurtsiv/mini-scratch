@@ -31,25 +31,38 @@ let dropInfo: { dropDir: DropDir; blockPath: BlockPath } | null = null
 function getSuggestDropDir(
   draggedBlockCoords: Coords,
   targetBlockCoords: Coords,
-  suggestBottom: boolean
+  firstBlockInTheGroup: boolean
 ): DropDir | null {
-  const isCloseEnough =
-    Math.abs(draggedBlockCoords.y - targetBlockCoords.y) <=
-      BLOCK_HEIGHT / 2 - 5 &&
-    Math.abs(draggedBlockCoords.x - targetBlockCoords.x) <= 40
+  const yDist = draggedBlockCoords.y - targetBlockCoords.y
+  const xDist = draggedBlockCoords.x - targetBlockCoords.x
+  const xCloseEnough = Math.abs(xDist) <= 40
 
-  if (!isCloseEnough && !suggestBottom) {
-    return null
+  if (
+    xCloseEnough &&
+    firstBlockInTheGroup &&
+    Math.abs(yDist) <= BLOCK_HEIGHT / 2 - 5
+  ) {
+    return DropDir.Top
   }
 
-  return DropDir.Top
+  if (
+    xCloseEnough &&
+    yDist >= BLOCK_HEIGHT / 2 + 5 &&
+    yDist <= BLOCK_HEIGHT + BLOCK_HEIGHT / 2 - 5
+  ) {
+    return DropDir.Bottom
+  }
+
+  return null
 }
 
 function useSuggestDrop({
+  block,
   path,
   elementRef,
   setBlocksState,
 }: {
+  block: Block
   path: BlockPath
   elementRef: RefObject<SVGPathElement>
   setBlocksState: SetterOrUpdater<Block[]>
@@ -69,21 +82,24 @@ function useSuggestDrop({
       return () => {}
     }
 
+    const firstBlockInTheGroup = path.split('.').length === 1
+
     function onTouchMove(draggedBlockCoords: Coords) {
       const currBlockCoords = elementRef.current?.getBoundingClientRect() as DOMRect
       const suggestDropDir = getSuggestDropDir(
         draggedBlockCoords,
-        suggestDropRef.current === null
+        suggestDropRef.current === null ||
+          suggestDropRef.current === DropDir.Bottom
           ? currBlockCoords
           : { x: currBlockCoords.x, y: currBlockCoords.y - BLOCK_HEIGHT },
-        false
+        firstBlockInTheGroup
       )
 
       if (suggestDropDir !== null && suggestDropRef.current === null) {
-        setSuggestDrop(DropDir.Top)
+        setSuggestDrop(suggestDropDir)
 
         dropInfo = {
-          dropDir: DropDir.Top,
+          dropDir: suggestDropDir,
           blockPath: path,
         }
       } else if (suggestDropDir === null && suggestDropRef.current !== null) {
@@ -101,6 +117,7 @@ function useSuggestDrop({
       dropInfo = null
     }
   }, [
+    block,
     setBlocksState,
     isDragging,
     setSuggestDrop,
@@ -153,6 +170,8 @@ function useSuggestDrop({
             lastBlockInCurrentGroup.next = destinationBlock
             set(state, dropInfo.blockPath, currBlock)
           } else {
+            currBlock.coords = null
+            lastBlockInCurrentGroup.next = destinationBlock.next
             destinationBlock.next = currBlock
           }
 
@@ -183,6 +202,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
   const elementRef = useRef<SVGPathElement>(null)
 
   const { onDragStart, onDragEnd, suggestDrop } = useSuggestDrop({
+    block,
     path,
     elementRef,
     setBlocksState,
