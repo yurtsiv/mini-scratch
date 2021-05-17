@@ -1,4 +1,4 @@
-import { Block } from 'components/Blocks/Block'
+import { Block } from 'components/Block/Block'
 import React, { useRef } from 'react'
 import { useRecoilState } from 'recoil'
 import { blocksState } from 'state/scriptEditor'

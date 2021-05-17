@@ -1,14 +1,19 @@
 /* eslint-disable complexity */
 
-import { BLOCK_HEIGHT } from 'lib/const'
+import clsx from 'clsx'
 import { Coords } from 'lib/types'
 import { get } from 'lodash'
-import React, { ForwardedRef, RefObject, SVGProps } from 'react'
+import React, { RefObject } from 'react'
 import ReactDOM from 'react-dom'
 import { SetterOrUpdater } from 'recoil'
 import { Block as BlockT, BlocksState, DropDir } from 'state/scriptEditor'
 
+import { PlaceholderBlock } from './PlaceholderBlock'
+import { Variant } from './Variants/Variant'
+import { BLOCK_HEIGHT } from './const'
 import { useBlock } from './useBlock'
+
+import './block.css'
 
 type Props = {
   path: string
@@ -17,23 +22,6 @@ type Props = {
   editorRef: RefObject<SVGElement>
   offset: Coords | null
 }
-
-function BlockPathC(
-  props: SVGProps<SVGPathElement>,
-  ref: ForwardedRef<SVGPathElement>
-) {
-  return (
-    <path
-      onDragStart={console.log}
-      fillOpacity="1"
-      d="m 0,4 A 4,4 0 0,1 4,0 H 12 c 2,0 3,1 4,2 l 4,4 c 1,1 2,2 4,2 h 12 c 2,0 3,-1 4,-2 l 4,-4 c 1,-1 2,-2 4,-2 H 145.3670997619629 a 4,4 0 0,1 4,4 v 40  a 4,4 0 0,1 -4,4 H 48   c -2,0 -3,1 -4,2 l -4,4 c -1,1 -2,2 -4,2 h -12 c -2,0 -3,-1 -4,-2 l -4,-4 c -1,-1 -2,-2 -4,-2 H 4 a 4,4 0 0,1 -4,-4 z"
-      ref={ref}
-      {...props}
-    />
-  )
-}
-
-const BlockPath = React.forwardRef(BlockPathC)
 
 export function Block({
   editorRef,
@@ -70,15 +58,20 @@ export function Block({
 
   const renderResult = (
     <g
-      stroke={draggingCoords ? 'red' : ''}
+      className={clsx(draggingCoords && 'group-highlighted')}
       transform={`translate(${coords.x}, ${coords.y})`}
     >
       {suggestTop && (
-        <BlockPath fill="#CCC" transform={`translate(0, -${BLOCK_HEIGHT})`} />
+        <PlaceholderBlock transform={`translate(0, -${BLOCK_HEIGHT})`} />
       )}
-      <BlockPath ref={ref} fill="#4C97FF" />
+      <Variant
+        block={block}
+        path={path}
+        setBlocksState={setBlocksState}
+        ref={ref}
+      />
       {suggestBottom && (
-        <BlockPath fill="#CCC" transform={`translate(0, ${BLOCK_HEIGHT})`} />
+        <PlaceholderBlock transform={`translate(0, ${BLOCK_HEIGHT})`} />
       )}
       {block.next ? (
         <Block

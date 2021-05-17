@@ -1,0 +1,12 @@
+.block-text {
+  fill: white;
+  font-size: 12pt;
+}
+
+.move-block-path {
+  fill: #4c97ff;
+}
+
+.group-highlighted path {
+  stroke: red;
+}

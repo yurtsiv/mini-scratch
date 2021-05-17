@@ -1,4 +1,4 @@
-import { Coords } from 'lib/types'
+import { BlockVariant, Coords, VariantConfig } from 'lib/types'
 import { atom } from 'recoil'
 
 export enum DropDir {
@@ -8,14 +8,11 @@ export enum DropDir {
 
 export type BlockPath = string
 
-export enum BlockType {
-  Regular,
-}
-
 export type Block = {
   id: number
+  config: VariantConfig
   coords?: Coords
-  type: BlockType
+  variant: BlockVariant
   next?: Block
 }
 
@@ -39,17 +36,20 @@ export const blocksState = atom<BlocksState>({
   default: [
     {
       id: 1,
-      type: BlockType.Regular,
+      config: { steps: 1 },
+      variant: BlockVariant.Move,
       coords: {
         x: 20,
         y: 30,
       },
       next: {
         id: 2,
-        type: BlockType.Regular,
+        config: { steps: 10000 },
+        variant: BlockVariant.Move,
         next: {
           id: 3,
-          type: BlockType.Regular,
+          config: { steps: 10 },
+          variant: BlockVariant.Move,
         },
       },
     },

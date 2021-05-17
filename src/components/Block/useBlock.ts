@@ -1,4 +1,3 @@
-import { BLOCK_HEIGHT } from 'lib/const'
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset, set } from 'lodash'
@@ -11,6 +10,8 @@ import {
   BlockPath,
   DropDir,
 } from 'state/scriptEditor'
+
+import { BLOCK_HEIGHT } from './const'
 
 type Params = {
   blocksState: BlocksState
@@ -233,7 +234,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
       }
 
       onDragStart()
-      const elemPos = (e.target as SVGPathElement).getBoundingClientRect()
+      const elemPos = (e.currentTarget as SVGPathElement).getBoundingClientRect()
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
       const touchPointWithinElem = {
