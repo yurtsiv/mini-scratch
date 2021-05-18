@@ -1,6 +1,6 @@
 import { BlockVariant, VariantConfig } from 'lib/types'
 import { cloneDeep, set } from 'lodash'
-import React, { ForwardedRef, SVGProps, useCallback } from 'react'
+import React, { SVGProps, useCallback } from 'react'
 import { SetterOrUpdater } from 'recoil'
 import { Block, BlockPath, BlocksState } from 'state/scriptEditor'
 
@@ -16,10 +16,7 @@ interface Props extends SVGProps<SVGGElement> {
   setBlocksState: SetterOrUpdater<BlocksState>
 }
 
-function VariantC(
-  { block, path, setBlocksState, ...props }: Props,
-  ref: ForwardedRef<SVGPathElement>
-) {
+function VariantC({ block, path, setBlocksState, ...props }: Props, ref: any) {
   const Comp = variantToComponent[block.variant]
 
   const setConfig = useCallback(
@@ -34,8 +31,8 @@ function VariantC(
   )
 
   return (
-    <Comp setConfig={setConfig} config={block.config} {...props} ref={ref} />
+    <Comp setConfig={setConfig} config={block.config} ref={ref} {...props} />
   )
 }
 
-export const Variant = React.forwardRef(VariantC)
+export const Variant = React.forwardRef<SVGGElement, Props>(VariantC)

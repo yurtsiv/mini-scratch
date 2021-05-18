@@ -10,3 +10,10 @@
 .group-highlighted path {
   stroke: red;
 }
+
+.param-input {
+  position: absolute;
+  font-size: 12pt;
+  border: none;
+  padding: 0;
+}

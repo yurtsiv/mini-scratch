@@ -243,16 +243,13 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
       }
 
       touchPointWithinElemRef.current = touchPointWithinElem
-
-      const coords = {
-        x: touchX - touchPointWithinElem.x,
-        y: touchY - touchPointWithinElem.y,
-      }
-
-      setDraggingCoords(coords)
     }
 
     function onTouchEnd() {
+      if (!draggingCoordsRef.current) {
+        return
+      }
+
       const dropped = onDragEnd()
 
       touchPointWithinElemRef.current = null
@@ -279,9 +276,9 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
           block.coords = draggingCoordsRef.current as Coords
           return state
         })
-
-        setDraggingCoords(null)
       }
+
+      setDraggingCoords(null)
     }
 
     function onTouchCancel() {

@@ -9,17 +9,19 @@ export function ScriptEditor() {
   console.log('EDITOR STATE', state)
 
   return (
-    <svg ref={editorRef} width="100%" height="300px">
-      {state.map((block, i) => (
-        <Block
-          editorRef={editorRef}
-          key={block.id}
-          blocksState={state}
-          setBlocksState={setState}
-          path={`${i}`}
-          offset={null}
-        />
-      ))}
-    </svg>
+    <>
+      <svg ref={editorRef} width="100%" height="300px">
+        {state.map((block, i) => (
+          <Block
+            editorRef={editorRef}
+            key={block.id}
+            blocksState={state}
+            setBlocksState={setState}
+            path={`${i}`}
+            offset={null}
+          />
+        ))}
+      </svg>
+    </>
   )
 }
