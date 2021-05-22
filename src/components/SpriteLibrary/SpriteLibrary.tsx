@@ -1,16 +1,15 @@
 import { SPRITES } from 'lib/sprites'
+import { useVM } from 'lib/vm'
 import React from 'react'
 
 import { SpriteItem } from './SpriteItem'
 
 import './styles.css'
 
-type Props = {
-  vm: any
-}
+export function SpriteLibrary() {
+  const vm = useVM()
 
-export function SpriteLibrary({ vm }: Props) {
-  async function onSpriteSelected(item: any) {
+  function onSpriteSelected(item: any) {
     const json = JSON.stringify(item)
     vm.addSprite(json)
   }

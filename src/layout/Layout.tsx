@@ -1,5 +1,5 @@
 import { Resizeable } from 'components/Resizeable'
-import { createVm } from 'lib/vm'
+import { createVm, VMContext } from 'lib/vm'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
 import { BottomHalf } from './BottomHalf'
@@ -19,29 +19,31 @@ export function Layout() {
   }, [])
 
   return (
-    <div
-      style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
-      <Resizeable
-        maxHeight={canvasHeight}
-        minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
-      >
-        <canvas ref={stageRef} id="scratch-stage" />
-      </Resizeable>
+    <VMContext.Provider value={vm}>
       <div
         style={{
-          flex: 1,
-          minHeight: MIN_RESIZEABLE_CONTENT_HEIGHT,
-          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
-        <BottomHalf vm={vm} />
+        <Resizeable
+          maxHeight={canvasHeight}
+          minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
+        >
+          <canvas ref={stageRef} id="scratch-stage" />
+        </Resizeable>
+        <div
+          style={{
+            flex: 1,
+            minHeight: MIN_RESIZEABLE_CONTENT_HEIGHT,
+            position: 'relative',
+          }}
+        >
+          <BottomHalf />
+        </div>
       </div>
-    </div>
+    </VMContext.Provider>
   )
 }

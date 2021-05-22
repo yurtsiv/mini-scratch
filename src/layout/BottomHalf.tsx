@@ -4,11 +4,7 @@ import { ScriptEditor } from 'components/ScriptEditor'
 import { SpriteLibrary } from 'components/SpriteLibrary'
 import React, { useState } from 'react'
 
-type Props = {
-  vm: any
-}
-
-export function BottomHalf({ vm }: Props) {
+export function BottomHalf() {
   const [view, setView] = useState<'sprites' | 'editor'>('sprites')
 
   return (
@@ -27,7 +23,7 @@ export function BottomHalf({ vm }: Props) {
             className="script-icon"
             onTouchStart={() => setView('editor')}
           />
-          <SpriteLibrary vm={vm} />
+          <SpriteLibrary />
         </>
       )}
     </div>

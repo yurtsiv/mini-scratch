@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import React, { useContext } from 'react'
 import AudioEngine from 'scratch-audio'
 // Need to import already pre-built version since it errors out
 // in this app otherwise. Probably a matter of webpack config.
@@ -134,3 +135,6 @@ export const createVm = ({ stage }: any) => {
 
   return vm
 }
+
+export const VMContext = React.createContext<any>(null)
+export const useVM = () => useContext(VMContext)
