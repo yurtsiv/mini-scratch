@@ -46,10 +46,109 @@ const getAssetUrl = (asset) => {
   return assetUrlParts.join('')
 }
 
+const getScratchCoords = (renderer, rect, x, y) => {
+  const nativeSize = renderer.getNativeSize()
+  return [
+    (nativeSize[0] / rect.width) * (x - rect.width / 2),
+    (nativeSize[1] / rect.height) * (y - rect.height / 2),
+  ]
+}
+
+const handleEventListeners = (vm, canvas) => {
+  const renderer = vm.renderer
+  const rect = canvas.getBoundingClientRect()
+
+  let dragOffset = []
+  let moved = false
+  let dragging = false
+
+  function onStartDrag(e) {
+    if (dragging) {
+      return
+    }
+
+    const { clientX: x, clientY: y } = e.touches[0]
+
+    const drawableId = renderer.pick(x, y)
+    if (drawableId === null) {
+      return
+    }
+
+    const targetId = vm.getTargetIdForDrawableId(drawableId)
+    if (targetId === null) {
+      return
+    }
+
+    const target = vm.runtime.getTargetById(targetId)
+
+    // Dragging always brings the target to the front
+    target.goToFront()
+
+    const [scratchMouseX, scratchMouseY] = getScratchCoords(
+      renderer,
+      rect,
+      x,
+      y
+    )
+
+    const offsetX = target.x - scratchMouseX
+    const offsetY = -(target.y + scratchMouseY)
+
+    vm.startDrag(targetId)
+
+    dragOffset = [offsetX, offsetY]
+    dragging = true
+  }
+
+  canvas.addEventListener('touchmove', (e) => {
+    const { clientX, clientY } = e.touches[0]
+
+    onStartDrag(e)
+
+    if (!dragging) {
+      return
+    }
+
+    const spritePosition = getScratchCoords(renderer, rect, clientX, clientY)
+    vm.postSpriteInfo({
+      x: spritePosition[0] + dragOffset[0],
+      y: -(spritePosition[1] + dragOffset[1]),
+      force: true,
+    })
+
+    const coordinates = {
+      x: clientX,
+      y: clientY,
+      canvasWidth: rect.width,
+      canvasHeight: rect.height,
+    }
+
+    vm.postIOData('mouse', coordinates)
+    moved = true
+  })
+
+  canvas.addEventListener('touchend', (e) => {
+    const { clientX, clientY } = e.changedTouches[0]
+    const rect = canvas.getBoundingClientRect()
+    const data = {
+      x: clientX,
+      y: clientY,
+      canvasWidth: rect.width,
+      canvasHeight: rect.height,
+    }
+
+    if (!moved) {
+      vm.postIOData('mouse', { ...data, isDown: true })
+    }
+
+    vm.postIOData('mouse', { ...data, isDown: false })
+    moved = false
+    dragging = false
+  })
+}
+
 export const createVm = ({ stage }: any) => {
   const vm = new VirtualMachine()
-
-  vm.setTurboMode(true)
 
   const storage = new ScratchStorage()
   const AssetType = storage.AssetType
@@ -81,48 +180,7 @@ export const createVm = ({ stage }: any) => {
   vm.attachAudioEngine(audioEngine)
   vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter())
 
-  // Feed mouse events as VM I/O events.
-  document.addEventListener('touchmove', (e) => {
-    const { clientX, clientY } = e.touches[0]
-    const rect = canvas.getBoundingClientRect()
-    const coordinates = {
-      x: clientX, //- rect.left,
-      y: clientY, //- rect.top,
-      canvasWidth: rect.width,
-      canvasHeight: rect.height,
-    }
-
-    vm.postIOData('mouse', coordinates)
-  })
-
-  canvas.addEventListener('touchstart', (e) => {
-    const { clientX, clientY } = e.touches[0]
-    const rect = canvas.getBoundingClientRect()
-
-    const data = {
-      isDown: true,
-      x: clientX, //- rect.left,
-      y: clientY, //- rect.top,
-      canvasWidth: rect.width,
-      canvasHeight: rect.height,
-    }
-
-    vm.postIOData('mouse', data)
-  })
-
-  canvas.addEventListener('touchend', (e) => {
-    const { clientX, clientY } = e.changedTouches[0]
-    const rect = canvas.getBoundingClientRect()
-    const data = {
-      isDown: false,
-      x: clientX, // - rect.left,
-      y: clientY, // - rect.top,
-      canvasWidth: rect.width,
-      canvasHeight: rect.height,
-    }
-
-    vm.postIOData('mouse', data)
-  })
+  handleEventListeners(vm, canvas)
 
   // Run threads
   vm.start()

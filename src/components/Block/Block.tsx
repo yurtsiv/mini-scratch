@@ -40,7 +40,6 @@ export function Block({
     setBlocksState,
   })
 
-  console.log(draggingCoords)
   const coords = draggingCoords
     ? { ...draggingCoords }
     : block.coords

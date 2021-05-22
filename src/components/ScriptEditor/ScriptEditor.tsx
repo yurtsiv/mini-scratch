@@ -6,17 +6,10 @@ import { blocksState } from 'state/scriptEditor'
 export function ScriptEditor() {
   const editorRef = useRef(null)
   const [state, setState] = useRecoilState(blocksState)
-  console.log('EDITOR STATE', state)
 
   return (
     <>
-      <svg
-        ref={editorRef}
-        width="100%"
-        height="100%"
-        // width={window.screen.width}
-        // height={window.screen.height / 2}
-      >
+      <svg ref={editorRef} width="100%" height="100%">
         {state.map((block, i) => (
           <Block
             editorRef={editorRef}
