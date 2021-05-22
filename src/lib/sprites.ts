@@ -54,6 +54,7 @@ export const SPRITES = [
       },
     ],
     blocks: {},
+    draggable: true,
   },
   {
     name: 'Amon',

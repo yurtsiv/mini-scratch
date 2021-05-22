@@ -7,18 +7,15 @@ import './styles.css'
 
 const MIN_RESIZEABLE_CONTENT_HEIGHT = 10
 
+const canvasHeight = window.screen.height / 2 - 10
+const canvasWidth = window.screen.width
+
 export function Layout() {
   const stageRef = useRef<HTMLCanvasElement | null>(null)
-  const [canvasHeight, setCanvasHeight] = useState(0)
-  const [vm, setVm] = useState<any>(null)
+  const [vm, setVm] = useState(null)
 
   useLayoutEffect(() => {
-    const canvas = stageRef.current as HTMLCanvasElement
-    const height = window.screen.height / 2 - 10
-    canvas.width = window.screen.width
-    canvas.height = height
-    setCanvasHeight(height)
-    setVm(createVm())
+    setVm(createVm({ stage: { width: canvasWidth, height: canvasHeight } }))
   }, [])
 
   return (

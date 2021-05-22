@@ -45,7 +45,7 @@ const getAssetUrl = (asset) => {
   return assetUrlParts.join('')
 }
 
-export const createVm = () => {
+export const createVm = ({ stage }: any) => {
   const vm = new VirtualMachine()
 
   vm.setTurboMode(true)
@@ -59,7 +59,7 @@ export const createVm = () => {
   )
   vm.attachStorage(storage)
 
-  const projectId = '1'
+  const projectId = '6'
   vm.downloadProjectId(projectId)
 
   vm.on('workspaceUpdate', () => {
@@ -70,15 +70,15 @@ export const createVm = () => {
 
   // Instantiate the renderer and connect it to the VM.
   const canvas = document.getElementById('scratch-stage')
-  const halfWidth = canvas?.clientWidth / 2 / window.devicePixelRatio
-  const halfHeight = canvas?.clientHeight / 2 / window.devicePixelRatio
-  const renderer = new ScratchRender(
-    canvas,
-    -halfWidth,
-    halfWidth,
-    -halfHeight,
-    halfHeight
+  const renderer = new ScratchRender(canvas)
+  renderer.resize(
+    stage.width / window.devicePixelRatio,
+    stage.height / window.devicePixelRatio
   )
+  const halfWidht = stage.width / 2
+  const halfHeight = stage.height / 2
+
+  renderer.setStageSize(-halfWidht, halfWidht, -halfHeight, halfHeight)
 
   vm.attachRenderer(renderer)
 
@@ -87,72 +87,46 @@ export const createVm = () => {
   vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter())
 
   // Feed mouse events as VM I/O events.
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener('touchmove', (e) => {
+    const { clientX, clientY } = e.touches[0]
     const rect = canvas.getBoundingClientRect()
     const coordinates = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: clientX, //- rect.left,
+      y: clientY, //- rect.top,
       canvasWidth: rect.width,
       canvasHeight: rect.height,
     }
 
     vm.postIOData('mouse', coordinates)
   })
-  canvas.addEventListener('mousedown', (e) => {
+
+  canvas.addEventListener('touchstart', (e) => {
+    const { clientX, clientY } = e.touches[0]
     const rect = canvas.getBoundingClientRect()
+
     const data = {
       isDown: true,
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: clientX, //- rect.left,
+      y: clientY, //- rect.top,
       canvasWidth: rect.width,
       canvasHeight: rect.height,
     }
 
     vm.postIOData('mouse', data)
-
-    e.preventDefault()
   })
-  canvas.addEventListener('mouseup', (e) => {
+
+  canvas.addEventListener('touchend', (e) => {
+    const { clientX, clientY } = e.changedTouches[0]
     const rect = canvas.getBoundingClientRect()
     const data = {
       isDown: false,
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: clientX, // - rect.left,
+      y: clientY, // - rect.top,
       canvasWidth: rect.width,
       canvasHeight: rect.height,
     }
 
     vm.postIOData('mouse', data)
-
-    e.preventDefault()
-  })
-
-  // Feed keyboard events as VM I/O events.
-  document.addEventListener('keydown', (e) => {
-    // Don't capture keys intended for Blockly inputs.
-    if (e.target !== document && e.target !== document.body) {
-      return
-    }
-
-    vm.postIOData('keyboard', {
-      keyCode: e.keyCode,
-      isDown: true,
-    })
-
-    // e.preventDefault()
-  })
-
-  document.addEventListener('keyup', (e) => {
-    // Always capture up events,
-    // even those that have switched to other targets.
-    vm.postIOData('keyboard', {
-      keyCode: e.keyCode,
-      isDown: false,
-    })
-    // E.g., prevent scroll.
-    if (e.target !== document && e.target !== document.body) {
-      // e.preventDefault()
-    }
   })
 
   // Run threads
