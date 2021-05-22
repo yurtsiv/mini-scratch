@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 export const getSpriteUrl = (md5Ext: string) =>
   `https://cdn.assets.scratch.mit.edu/internalapi/asset/${md5Ext}/get/`
@@ -8,16 +8,23 @@ type Props = {
   onSpriteSelected: (item: any) => void
 }
 
-export function SpriteItem({
-  sprite,
-  onSpriteSelected: onItemSelected,
-}: Props) {
+export function SpriteItem({ sprite, onSpriteSelected }: Props) {
+  const movedRef = useRef(false)
+
   return (
     <img
       className="sprite-item"
       alt={`sprite-${sprite}`}
       src={getSpriteUrl(sprite.costumes[0].md5ext)}
-      onTouchStart={() => onItemSelected(sprite)}
+      onTouchMove={() => (movedRef.current = true)}
+      onTouchEnd={() => {
+        if (!movedRef.current) {
+          onSpriteSelected(sprite)
+        }
+
+        movedRef.current = false
+      }}
+      onTouchCancel={() => (movedRef.current = false)}
     />
   )
 }
