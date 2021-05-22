@@ -10,7 +10,7 @@ export function ScriptEditor() {
 
   return (
     <>
-      <svg ref={editorRef} width="100%" height="300px">
+      <svg ref={editorRef} width="1000" height="1000">
         {state.map((block, i) => (
           <Block
             editorRef={editorRef}

@@ -1,17 +1,23 @@
 import { Resizeable } from 'components/Resizeable'
 import { ScriptEditor } from 'components/ScriptEditor'
-import React, { useLayoutEffect } from 'react'
-// const { runVMTest } = require('../testVM')
+import React, { useLayoutEffect, useRef, useState } from 'react'
+
 import { runBenchmark } from '../testVM2'
-// import { runBenchmark } from 'testVM2'
 
 const MIN_RESIZEABLE_CONTENT_HEIGHT = 10
 const STATIC_CONTENT_HEIGHT = 100
 
 export function Layout() {
+  const stageRef = useRef<HTMLCanvasElement | null>(null)
+  const [canvasHeight, setCanvasHeight] = useState(0)
+
   useLayoutEffect(() => {
+    const canvas = stageRef.current as HTMLCanvasElement
+    const height = window.screen.height / 2
+    canvas.width = window.screen.width
+    canvas.height = height
+    setCanvasHeight(height)
     runBenchmark()
-    // runVMTest()
   }, [])
 
   return (
@@ -24,21 +30,17 @@ export function Layout() {
       }}
     >
       <Resizeable
-        maxHeight={
-          window.innerHeight -
-          STATIC_CONTENT_HEIGHT -
-          MIN_RESIZEABLE_CONTENT_HEIGHT
-        }
+        maxHeight={canvasHeight}
         minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
       >
-        <ScriptEditor />
+        <canvas ref={stageRef} id="scratch-stage" />
       </Resizeable>
       <div
         style={{
           minHeight: MIN_RESIZEABLE_CONTENT_HEIGHT,
         }}
       >
-        <canvas id="scratch-stage" />
+        <ScriptEditor />
       </div>
       <div
         style={{
