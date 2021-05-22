@@ -63,12 +63,6 @@ export const createVm = ({ stage }: any) => {
   const projectId = '6'
   vm.downloadProjectId(projectId)
 
-  vm.on('workspaceUpdate', () => {
-    setTimeout(() => {
-      vm.greenFlag()
-    }, 100)
-  })
-
   // Instantiate the renderer and connect it to the VM.
   const canvas = document.getElementById('scratch-stage')
   const renderer = new ScratchRender(canvas)

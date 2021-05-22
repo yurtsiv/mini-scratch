@@ -1,6 +1,7 @@
 import { Resizeable } from 'components/Resizeable'
+import { Stage } from 'components/Stage'
 import { createVm, VMContext } from 'lib/vm'
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 
 import { BottomHalf } from './BottomHalf'
 import './styles.css'
@@ -11,7 +12,6 @@ const canvasHeight = window.screen.height / 2 - 10
 const canvasWidth = window.screen.width
 
 export function Layout() {
-  const stageRef = useRef<HTMLCanvasElement | null>(null)
   const [vm, setVm] = useState(null)
 
   useLayoutEffect(() => {
@@ -32,7 +32,7 @@ export function Layout() {
           maxHeight={canvasHeight}
           minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
         >
-          <canvas ref={stageRef} id="scratch-stage" />
+          <Stage />
         </Resizeable>
         <div
           style={{
