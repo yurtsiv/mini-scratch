@@ -33,12 +33,14 @@ export function Block({
   const block = get(blocksState, path) as BlockT
 
   const { draggingCoords, ref, suggestDrop } = useBlock({
+    editorRef,
     block,
     blocksState,
     path,
     setBlocksState,
   })
 
+  console.log(draggingCoords)
   const coords = draggingCoords
     ? { ...draggingCoords }
     : block.coords

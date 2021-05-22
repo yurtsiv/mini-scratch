@@ -14,6 +14,7 @@ import {
 import { BLOCK_HEIGHT } from './const'
 
 type Params = {
+  editorRef: any
   blocksState: BlocksState
   block: Block
   setBlocksState: SetterOrUpdater<Block[]>
@@ -194,7 +195,12 @@ function useSuggestDrop({
   }
 }
 
-export function useBlock({ block, setBlocksState, path }: Params): Return {
+export function useBlock({
+  editorRef,
+  block,
+  setBlocksState,
+  path,
+}: Params): Return {
   const [
     draggingCoordsRef,
     draggingCoords,
@@ -215,15 +221,25 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     function onTouchMove(e: TouchEvent) {
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
+      const ctm = editorRef.current.getScreenCTM()
+
+      const relativeX = (touchX - ctm.e) / ctm.a
+      const relativeY = (touchY - ctm.f) / ctm.d
+
       const touchPointWithinElem = touchPointWithinElemRef.current as Coords
-      const coords = {
+      const relativeCoords = {
+        x: relativeX - touchPointWithinElem.x,
+        y: relativeY - touchPointWithinElem.y,
+      }
+
+      const globalCoords = {
         x: touchX - touchPointWithinElem.x,
         y: touchY - touchPointWithinElem.y,
       }
 
-      setDraggingCoords(coords)
+      setDraggingCoords(relativeCoords)
       Reflect.ownKeys(dragListeners).forEach((key) =>
-        dragListeners[key](coords)
+        dragListeners[key](globalCoords)
       )
     }
 
@@ -311,6 +327,7 @@ export function useBlock({ block, setBlocksState, path }: Params): Return {
     path,
     setDraggingCoords,
     block,
+    editorRef,
   ])
 
   return {

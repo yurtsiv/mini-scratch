@@ -16,7 +16,7 @@ export function Resizeable({
   maxHeight,
   minHeight,
 }: Props) {
-  const [height, setHeight] = useState(0)
+  const [height, setHeight] = useState(maxHeight)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleBarMove = useCallback(
@@ -35,7 +35,7 @@ export function Resizeable({
     <div
       ref={containerRef}
       className={`resizeable-container ${className}`}
-      style={{ height: height ? height : undefined }}
+      style={{ height: height ? height : maxHeight }}
     >
       <div className="resizeable-content">{children}</div>
       <div className="resize-bar" onTouchMove={handleBarMove} />

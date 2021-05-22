@@ -5,7 +5,6 @@ import React, { useLayoutEffect, useRef, useState } from 'react'
 import { runBenchmark } from '../testVM2'
 
 const MIN_RESIZEABLE_CONTENT_HEIGHT = 10
-const STATIC_CONTENT_HEIGHT = 100
 
 export function Layout() {
   const stageRef = useRef<HTMLCanvasElement | null>(null)
@@ -13,7 +12,7 @@ export function Layout() {
 
   useLayoutEffect(() => {
     const canvas = stageRef.current as HTMLCanvasElement
-    const height = window.screen.height / 2
+    const height = window.screen.height / 2 - 10
     canvas.width = window.screen.width
     canvas.height = height
     setCanvasHeight(height)
@@ -37,17 +36,12 @@ export function Layout() {
       </Resizeable>
       <div
         style={{
+          flex: 1,
           minHeight: MIN_RESIZEABLE_CONTENT_HEIGHT,
         }}
       >
         <ScriptEditor />
       </div>
-      <div
-        style={{
-          height: STATIC_CONTENT_HEIGHT,
-          backgroundColor: '#eee',
-        }}
-      />
     </div>
   )
 }
