@@ -9,3 +9,9 @@
   margin-top: 5px;
   margin-left: 5px;
 }
+
+.bottom-half-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

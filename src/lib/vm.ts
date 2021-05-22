@@ -15,7 +15,7 @@ const PROJECT_SERVER = 'https://cdn.projects.scratch.mit.edu/'
  * @param {Asset} asset - calculate a URL for this asset.
  * @returns {string} a URL to download a project file.
  */
-const getProjectUrl = function (asset) {
+const getProjectUrl = (asset) => {
   const assetIdParts = asset.assetId.split('.')
   const assetUrlParts = [
     PROJECT_SERVER,
@@ -33,7 +33,7 @@ const getProjectUrl = function (asset) {
  * @param {Asset} asset - calculate a URL for this asset.
  * @returns {string} a URL to download a project asset (PNG, WAV, etc.)
  */
-const getAssetUrl = function (asset) {
+const getAssetUrl = (asset) => {
   const assetUrlParts = [
     ASSET_SERVER,
     'internalapi/asset/',
@@ -45,13 +45,7 @@ const getAssetUrl = function (asset) {
   return assetUrlParts.join('')
 }
 
-/**
- * Run the benchmark with given parameters in the location's hash field or
- * using defaults.
- */
-export const runBenchmark = function () {
-  // Lots of global variables to make debugging easier
-  // Instantiate the VM.
+export const createVm = () => {
   const vm = new VirtualMachine()
 
   vm.setTurboMode(true)
@@ -85,15 +79,6 @@ export const runBenchmark = function () {
     -halfHeight,
     halfHeight
   )
-
-  // debugger
-  // renderer.setStageSize(-halfWidth, halfWidth, -halfHeight, halfHeight)
-  // renderer.resize(100, 100)
-
-  // halfWidth = 100
-  // halfHeight = 100
-  // renderer.setStageSize(-halfWidth, halfWidth, -halfHeight, halfHeight)
-  // renderer.resize(200, 200)
 
   vm.attachRenderer(renderer)
 
@@ -172,4 +157,6 @@ export const runBenchmark = function () {
 
   // Run threads
   vm.start()
+
+  return vm
 }
