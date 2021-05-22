@@ -1,0 +1,29 @@
+import { ImageIcon } from 'components/Icons/ImageIcon'
+import { ScriptIcon } from 'components/Icons/ScriptIcon'
+import { ScriptEditor } from 'components/ScriptEditor'
+import { SpriteLibrary } from 'components/SpriteLibrary'
+import React, { useState } from 'react'
+
+export function BottomHalf() {
+  const [view, setView] = useState<'sprites' | 'editor'>('editor')
+
+  return view === 'editor' ? (
+    <>
+      <ImageIcon
+        onTouchStart={() => setView('sprites')}
+        className="sprites-lib-icon"
+      />
+      <ScriptEditor />
+    </>
+  ) : (
+    <>
+      <ScriptIcon
+        className="script-icon"
+        onTouchStart={() => setView('editor')}
+      />
+      <div style={{ flex: 1 }}>
+        <SpriteLibrary />
+      </div>
+    </>
+  )
+}

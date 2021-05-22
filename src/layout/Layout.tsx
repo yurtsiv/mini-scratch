@@ -1,8 +1,9 @@
 import { Resizeable } from 'components/Resizeable'
-import { ScriptEditor } from 'components/ScriptEditor'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
 import { runBenchmark } from '../testVM2'
+import { BottomHalf } from './BottomHalf'
+import './styles.css'
 
 const MIN_RESIZEABLE_CONTENT_HEIGHT = 10
 
@@ -25,7 +26,7 @@ export function Layout() {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        overflow: 'hidden',
       }}
     >
       <Resizeable
@@ -38,9 +39,10 @@ export function Layout() {
         style={{
           flex: 1,
           minHeight: MIN_RESIZEABLE_CONTENT_HEIGHT,
+          position: 'relative',
         }}
       >
-        <ScriptEditor />
+        <BottomHalf />
       </div>
     </div>
   )
