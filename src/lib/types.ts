@@ -7,6 +7,7 @@ export enum BlockVariant {
   Move,
   TurnRight,
   TurnLeft,
+  GoToRandom,
 }
 
 export type MoveConfig = {
@@ -17,4 +18,6 @@ export type RotateConfig = {
   degrees: number
 }
 
-export type VariantConfig = MoveConfig | RotateConfig
+export type GoToRandomConfig = {}
+
+export type VariantConfig = MoveConfig | RotateConfig | GoToRandomConfig

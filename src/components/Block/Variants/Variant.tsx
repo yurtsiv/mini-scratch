@@ -5,6 +5,7 @@ import { SetterOrUpdater } from 'recoil'
 import { Block, BlockPath, BlocksState } from 'state/scriptEditor'
 
 import { BLOCK_SCALE } from '../const'
+import { GoToRandom } from './GoToRandom'
 import { Move } from './Move'
 import { TurnLeft } from './TurnLeft'
 import { TurnRight } from './TurnRight'
@@ -13,6 +14,7 @@ const variantToComponent = {
   [BlockVariant.Move]: Move,
   [BlockVariant.TurnRight]: TurnRight,
   [BlockVariant.TurnLeft]: TurnLeft,
+  [BlockVariant.GoToRandom]: GoToRandom,
 }
 
 interface Props extends SVGProps<SVGGElement> {

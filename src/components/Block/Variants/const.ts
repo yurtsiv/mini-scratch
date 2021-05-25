@@ -10,4 +10,5 @@ export const blockDefaultWidth = {
   [BlockVariant.Move]: 108,
   [BlockVariant.TurnRight]: 133,
   [BlockVariant.TurnLeft]: 133,
+  [BlockVariant.GoToRandom]: 80,
 }

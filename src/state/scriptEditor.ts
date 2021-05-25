@@ -61,8 +61,8 @@ export const blocksState = atom<BlocksState>({
       id: '8',
       index: 4,
       libraryBlock: true,
-      variant: BlockVariant.Move,
-      config: { steps: 4 },
+      variant: BlockVariant.GoToRandom,
+      config: {},
     },
     '9': {
       id: '9',

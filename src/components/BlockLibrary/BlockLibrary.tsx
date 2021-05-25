@@ -20,7 +20,7 @@ export function BlockLibrary({ editorRef }: Props) {
 
   return (
     <g className="block-lib-container" ref={blockLibRef}>
-      <rect width="100%" height="80" fill={highlighted ? 'red' : '#eee'} />
+      <rect width="100%" height="80" fill={highlighted ? '#ddd' : '#eee'} />
       <g transform={`translate(${scrollX}, 0)`}>
         {libraryBlocks.map(([block, offsetX]: any) => (
           <Block
