@@ -25,6 +25,13 @@ export type DraggingState = {
   draggedBlockPath: BlockPath
 }
 
+export type EditingTarget = string
+
+export const editingTargetState = atom<EditingTarget>({
+  key: 'editingTargetState',
+  default: '',
+})
+
 export const draggingState = atom<DraggingState>({
   key: 'scriptEditorDraggingState',
   default: {

@@ -9,6 +9,8 @@ import ScratchStorage from 'scratch-storage'
 import ScratchSVGRenderer from 'scratch-svg-renderer'
 import VirtualMachine from 'scratch-vm'
 
+import { EMPTY_STAGE_TARGET } from './const'
+
 const ASSET_SERVER = 'https://cdn.assets.scratch.mit.edu/'
 const PROJECT_SERVER = 'https://cdn.projects.scratch.mit.edu/'
 
@@ -61,6 +63,7 @@ const handleEventListeners = (vm, canvas) => {
   let dragOffset = []
   let moved = false
   let dragging = false
+  let dragId = null
 
   function onStartDrag(e) {
     if (dragging) {
@@ -96,6 +99,7 @@ const handleEventListeners = (vm, canvas) => {
 
     vm.startDrag(targetId)
 
+    dragId = targetId
     dragOffset = [offsetX, offsetY]
     dragging = true
   }
@@ -148,6 +152,8 @@ const handleEventListeners = (vm, canvas) => {
       }
 
       vm.postIOData('mouse', { ...data, isDown: false })
+      vm.stopDrag(dragId)
+      dragId = null
       moved = false
       dragging = false
     },
@@ -167,8 +173,15 @@ export const createVm = ({ stage }: any) => {
   )
   vm.attachStorage(storage)
 
-  const projectId = '6'
-  vm.downloadProjectId(projectId)
+  // const projectId = '48042'
+  // vm.downloadProjectId(projectId)
+  vm.loadProject({
+    targets: [EMPTY_STAGE_TARGET],
+    meta: {
+      semver: '3.0.0',
+      vm: '0.2.0-prerelease.20210510162256',
+    },
+  })
 
   // Instantiate the renderer and connect it to the VM.
   const canvas = document.getElementById('scratch-stage')

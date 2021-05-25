@@ -1,0 +1,26 @@
+export const EMPTY_STAGE_TARGET = {
+  isStage: true,
+  name: 'Stage',
+  variables: {},
+  blocks: {},
+  comments: {},
+  currentCostume: 1,
+  costumes: [
+    {
+      assetId: '797b03bdb8cf6ccfc30c0692d533d998',
+      name: 'backdrop1',
+      bitmapResolution: 2,
+      md5ext: '797b03bdb8cf6ccfc30c0692d533d998.png',
+      dataFormat: 'png',
+      rotationCenterX: 480,
+      rotationCenterY: 360,
+    },
+  ],
+  sounds: [],
+  volume: 100,
+  layerOrder: 0,
+  tempo: 60,
+  videoTransparency: 50,
+  videoState: 'off',
+  textToSpeechLanguage: null,
+}
