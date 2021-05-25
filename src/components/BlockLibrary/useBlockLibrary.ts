@@ -1,5 +1,6 @@
 import { BLOCK_HEIGHT } from 'components/Block/const'
 import { BlockDragState } from 'components/Block/dragListeners'
+import { useSvgScroll } from 'lib/hooks/useSvgScroll'
 import { Coords } from 'lib/types'
 import { sortBy } from 'lodash'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
@@ -59,11 +60,14 @@ export function useBlockLibrary() {
     }
   }, [highlighted, setBlocksState])
 
+  const { scrollX } = useSvgScroll({ elemRef: blockLibRef })
+
   return {
     blocksState,
     setBlocksState,
     libraryBlocks,
     blockLibRef,
     highlighted,
+    scrollX,
   }
 }

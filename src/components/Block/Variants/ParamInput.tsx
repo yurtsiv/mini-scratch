@@ -60,7 +60,7 @@ export function ParamInput({ onApplyChange, onChange, value }: Props) {
             fill="#FFFFFF"
             fillOpacity="1"
             d={`m 0,0 m 16,0 H ${
-              textWidth + 5
+              textWidth + 7
             } a 16 16 0 0 1 0 32 H 16 a 16 16 0 0 1 0 -32 z`}
           />
           <text x="12" y="21">

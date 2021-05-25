@@ -48,6 +48,8 @@ export function useBlock({
 
   useLayoutEffect(() => {
     function onTouchMove(e: TouchEvent) {
+      e.stopPropagation()
+
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
       if (!draggingCoordsRef.current) {
@@ -79,6 +81,8 @@ export function useBlock({
     }
 
     function onTouchStart(e: TouchEvent) {
+      e.stopPropagation()
+
       // sometimes this function is called twice
       if (touchPointWithinElemRef.current) {
         return

@@ -1,5 +1,5 @@
 import { Coords } from 'lib/types'
-import { cloneDeep, get, set, unset } from 'lodash'
+import { cloneDeep, get, unset } from 'lodash'
 import { Block, BlockPath, BlocksState, DropDir } from 'state/scriptEditor'
 
 import { BLOCK_HEIGHT } from './const'
@@ -65,7 +65,8 @@ function snapBlockIntoSuggestedPlace(
 
     unset(destinationBlock, 'coords')
     lastBlockInCurrentGroup.next = destinationBlock
-    set(state, dropInfo.blockPath, block)
+    state[block.id] = block
+    unset(state, destinationBlock.id)
   } else {
     unset(block, 'coords')
     if (destinationBlock.next) {

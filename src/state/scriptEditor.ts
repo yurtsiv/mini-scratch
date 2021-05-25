@@ -36,25 +36,6 @@ export const draggingState = atom<DraggingState>({
 export const blocksState = atom<BlocksState>({
   key: 'scriptEditorBlocksState',
   default: {
-    '1': {
-      id: '1',
-      config: { steps: 1 },
-      variant: BlockVariant.Move,
-      coords: {
-        x: 20,
-        y: 30,
-      },
-      next: {
-        id: '2',
-        config: { steps: 10000 },
-        variant: BlockVariant.Move,
-        next: {
-          id: '3',
-          config: { steps: 10 },
-          variant: BlockVariant.Move,
-        },
-      },
-    },
     '5': {
       id: '5',
       index: 1,
@@ -78,6 +59,20 @@ export const blocksState = atom<BlocksState>({
     },
     '8': {
       id: '8',
+      index: 4,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 4 },
+    },
+    '9': {
+      id: '9',
+      index: 4,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 4 },
+    },
+    '10': {
+      id: '10',
       index: 4,
       libraryBlock: true,
       variant: BlockVariant.Move,
