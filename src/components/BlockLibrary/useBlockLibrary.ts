@@ -1,13 +1,10 @@
 import { BLOCK_HEIGHT } from 'components/Block/const'
 import { BlockDragState } from 'components/Block/dragListeners'
 import { Coords } from 'lib/types'
+import { sortBy } from 'lodash'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
-import {
-  Block,
-  BlockPath,
-  blocksState as blocksStateRecoil,
-} from 'state/scriptEditor'
+import { BlockPath, blocksState as blocksStateRecoil } from 'state/scriptEditor'
 
 export function useBlockLibrary() {
   const [highlighted, setHighlghited] = useState(false)
@@ -16,9 +13,10 @@ export function useBlockLibrary() {
 
   const libraryBlocks = useMemo(
     () =>
-      blocksState
-        .map<[Block, BlockPath]>((block, index) => [block, `${index}`])
-        .filter(([block]) => !!block.libraryBlock),
+      sortBy(
+        Object.values(blocksState).filter((block) => !!block.libraryBlock),
+        'index'
+      ),
     [blocksState]
   )
 

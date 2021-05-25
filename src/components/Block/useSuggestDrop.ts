@@ -2,7 +2,13 @@ import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { RefObject, useEffect } from 'react'
 import { SetterOrUpdater, useRecoilState } from 'recoil'
-import { Block, BlockPath, draggingState, DropDir } from 'state/scriptEditor'
+import {
+  Block,
+  BlockPath,
+  BlocksState,
+  draggingState,
+  DropDir,
+} from 'state/scriptEditor'
 
 import { BLOCK_HEIGHT } from './const'
 import { BlockDragState } from './dragListeners'
@@ -17,7 +23,7 @@ export function useSuggestDrop({
   block: Block
   path: BlockPath
   elementRef: RefObject<SVGPathElement>
-  setBlocksState: SetterOrUpdater<Block[]>
+  setBlocksState: SetterOrUpdater<BlocksState>
 }) {
   const [
     suggestDropRef,

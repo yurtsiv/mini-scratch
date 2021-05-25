@@ -22,13 +22,13 @@ export function BlockLibrary({ editorRef }: Props) {
   return (
     <g className="block-lib-container" ref={blockLibRef}>
       <rect width="100%" height="80" fill={highlighted ? 'red' : '#eee'} />
-      {libraryBlocks.map(([block, path], idx) => (
+      {libraryBlocks.map((block, idx) => (
         <Block
           key={block.id}
           blocksState={blocksState}
           editorRef={editorRef}
           setBlocksState={setBlocksState}
-          path={path}
+          path={block.id}
           offset={{
             x: idx * BLOCK_WIDTH,
             y: 10,

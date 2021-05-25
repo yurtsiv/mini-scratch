@@ -12,15 +12,15 @@ export function ScriptEditor() {
   return (
     <>
       <svg ref={editorRef} width="100%" height="100%">
-        {state.map(
-          (block, i) =>
+        {Object.entries(state).map(
+          ([path, block]) =>
             !block.libraryBlock && (
               <Block
                 editorRef={editorRef}
                 key={block.id}
                 blocksState={state}
                 setBlocksState={setState}
-                path={`${i}`}
+                path={path}
                 offset={null}
               />
             )

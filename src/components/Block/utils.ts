@@ -34,16 +34,10 @@ export function getSuggestDropDir(
   return null
 }
 
-function createNewLibraryBlock(
-  state: BlocksState,
-  block: Block,
-  path: BlockPath
-) {
+function createNewLibraryBlock(state: BlocksState, block: Block) {
   const newLibBlock = cloneDeep(block)
-  newLibBlock.id = Date.now()
-  newLibBlock.next = undefined
-  const blockIdx = parseInt(path)
-  state.splice(blockIdx + 1, 0, newLibBlock)
+  newLibBlock.id = `${Date.now()}`
+  state[newLibBlock.id] = newLibBlock
 
   block.libraryBlock = false
 }
@@ -59,14 +53,14 @@ function snapBlockIntoSuggestedPlace(
   }
 
   const dropInfo = BlockDragState.dropSuggestion
-  const destinationBlock = get(state, dropInfo?.blockPath ?? '')
+  const destinationBlock = get(state, dropInfo?.blockPath as string) as Block
 
   unset(state, path)
 
   if (dropInfo?.dropDir === DropDir.Top) {
     block.coords = {
-      x: destinationBlock.coords.x,
-      y: destinationBlock.coords.y - BLOCK_HEIGHT,
+      x: (destinationBlock.coords as Coords).x,
+      y: (destinationBlock.coords as Coords).y - BLOCK_HEIGHT,
     }
 
     unset(destinationBlock, 'coords')
@@ -80,14 +74,14 @@ function snapBlockIntoSuggestedPlace(
     destinationBlock.next = block
   }
 
-  return state.filter(Boolean)
+  return state
 }
 
 export function updateStateOnDragEnd(state: BlocksState, path: BlockPath) {
   const block = get(state, path)
 
   if (block.libraryBlock) {
-    createNewLibraryBlock(state, block, path)
+    createNewLibraryBlock(state, block)
   }
 
   if (BlockDragState.dropSuggestion) {
@@ -96,14 +90,14 @@ export function updateStateOnDragEnd(state: BlocksState, path: BlockPath) {
 
   if (BlockDragState.blockToRemove) {
     unset(state, BlockDragState.blockToRemove as string)
-    return state.filter(Boolean)
+    return state
   }
 
   const nestedBlock = path.split('.').length > 1
 
   if (nestedBlock) {
     block.coords = BlockDragState.dragCoords as Coords
-    state.push(block)
+    state[block.id] = block
     unset(state, path)
   } else {
     block.coords = BlockDragState.dragCoords as Coords

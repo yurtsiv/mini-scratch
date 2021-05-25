@@ -13,7 +13,7 @@ type Params = {
   editorRef: any
   blocksState: BlocksState
   block: Block
-  setBlocksState: SetterOrUpdater<Block[]>
+  setBlocksState: SetterOrUpdater<BlocksState>
   path: string
 }
 

@@ -9,15 +9,16 @@ export enum DropDir {
 export type BlockPath = string
 
 export type Block = {
-  id: number
+  id: string
   config: VariantConfig
   coords?: Coords
   variant: BlockVariant
   next?: Block
   libraryBlock?: boolean
+  index?: number
 }
 
-export type BlocksState = Block[]
+export type BlocksState = Record<string, Block>
 
 export type DraggingState = {
   isDragging: boolean
@@ -34,9 +35,9 @@ export const draggingState = atom<DraggingState>({
 
 export const blocksState = atom<BlocksState>({
   key: 'scriptEditorBlocksState',
-  default: [
-    {
-      id: 1,
+  default: {
+    '1': {
+      id: '1',
       config: { steps: 1 },
       variant: BlockVariant.Move,
       coords: {
@@ -44,39 +45,43 @@ export const blocksState = atom<BlocksState>({
         y: 30,
       },
       next: {
-        id: 2,
+        id: '2',
         config: { steps: 10000 },
         variant: BlockVariant.Move,
         next: {
-          id: 3,
+          id: '3',
           config: { steps: 10 },
           variant: BlockVariant.Move,
         },
       },
     },
-    {
-      id: 5,
+    '5': {
+      id: '5',
+      index: 1,
       libraryBlock: true,
       variant: BlockVariant.Move,
       config: { steps: 1 },
     },
-    {
-      id: 6,
+    '6': {
+      id: '6',
+      index: 2,
       libraryBlock: true,
       variant: BlockVariant.Move,
       config: { steps: 2 },
     },
-    {
-      id: 7,
+    '7': {
+      id: '7',
+      index: 3,
       libraryBlock: true,
       variant: BlockVariant.Move,
       config: { steps: 3 },
     },
-    {
-      id: 8,
+    '8': {
+      id: '8',
+      index: 4,
       libraryBlock: true,
       variant: BlockVariant.Move,
       config: { steps: 4 },
     },
-  ],
+  },
 })
