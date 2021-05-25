@@ -40,7 +40,7 @@ export function ParamInput({ onApplyChange, onChange, value }: Props) {
         className="param-input"
         style={{
           top: textBoxCoords.top + 5,
-          left: textBoxCoords.left + 11,
+          left: textBoxCoords.left + 9,
           width: textWidth * BLOCK_SCALE,
           fontSize: `${12 * BLOCK_SCALE}pt`,
         }}

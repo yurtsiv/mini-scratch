@@ -63,7 +63,7 @@ export function Block({
       transform={`translate(${coords.x}, ${coords.y})`}
     >
       {suggestTop && (
-        <PlaceholderBlock transform={`translate(0, -${BLOCK_HEIGHT + 10})`} />
+        <PlaceholderBlock transform={`translate(0, -${BLOCK_HEIGHT + 15})`} />
       )}
       <Variant
         block={block}
@@ -72,7 +72,7 @@ export function Block({
         ref={ref}
       />
       {suggestBottom && (
-        <PlaceholderBlock transform={`translate(0, ${BLOCK_HEIGHT + 10})`} />
+        <PlaceholderBlock transform={`translate(0, ${BLOCK_HEIGHT + 15})`} />
       )}
       {block.next ? (
         <Block

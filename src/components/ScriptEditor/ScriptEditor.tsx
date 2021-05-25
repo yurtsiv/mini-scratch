@@ -1,4 +1,5 @@
 import { Block } from 'components/Block/Block'
+import { BlockLibrary } from 'components/BlockLibrary'
 import React, { useRef } from 'react'
 import { useRecoilState } from 'recoil'
 import { blocksState } from 'state/scriptEditor'
@@ -20,6 +21,7 @@ export function ScriptEditor() {
             offset={null}
           />
         ))}
+        <BlockLibrary />
       </svg>
     </>
   )
