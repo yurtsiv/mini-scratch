@@ -1,17 +1,13 @@
 import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
-import { cloneDeep, get, unset, set } from 'lodash'
-import { useRef, useEffect, useLayoutEffect, RefObject, useMemo } from 'react'
+import { cloneDeep } from 'lodash'
+import { useRef, useLayoutEffect, RefObject } from 'react'
 import { SetterOrUpdater, useRecoilState } from 'recoil'
-import {
-  Block,
-  BlocksState,
-  draggingState,
-  BlockPath,
-  DropDir,
-} from 'state/scriptEditor'
+import { Block, BlocksState, draggingState, DropDir } from 'state/scriptEditor'
 
-import { BLOCK_HEIGHT } from './const'
+import { BlockDragState } from './dragListeners'
+import { useSuggestDrop } from './useSuggestDrop'
+import { updateStateOnDragEnd } from './utils'
 
 type Params = {
   editorRef: any
@@ -25,174 +21,6 @@ type Return = {
   draggingCoords: Coords | null
   ref: RefObject<SVGPathElement>
   suggestDrop: DropDir | null
-}
-
-const dragListeners: any = {}
-let dropInfo: { dropDir: DropDir; blockPath: BlockPath } | null = null
-
-function getSuggestDropDir(
-  draggedBlockCoords: Coords,
-  targetBlockCoords: Coords,
-  firstBlockInTheGroup: boolean
-): DropDir | null {
-  const yDist = draggedBlockCoords.y - targetBlockCoords.y
-  const xDist = draggedBlockCoords.x - targetBlockCoords.x
-  const xCloseEnough = Math.abs(xDist) <= 40
-
-  if (
-    xCloseEnough &&
-    firstBlockInTheGroup &&
-    yDist >= -BLOCK_HEIGHT &&
-    yDist <= BLOCK_HEIGHT / 2 - 5
-  ) {
-    return DropDir.Top
-  }
-
-  if (
-    xCloseEnough &&
-    yDist >= BLOCK_HEIGHT / 2 + 5 &&
-    yDist <= BLOCK_HEIGHT + BLOCK_HEIGHT / 2 - 5
-  ) {
-    return DropDir.Bottom
-  }
-
-  return null
-}
-
-function useSuggestDrop({
-  block,
-  path,
-  elementRef,
-  setBlocksState,
-}: {
-  block: Block
-  path: BlockPath
-  elementRef: RefObject<SVGPathElement>
-  setBlocksState: SetterOrUpdater<Block[]>
-}) {
-  const [
-    suggestDropRef,
-    suggestDrop,
-    setSuggestDrop,
-  ] = useRefState<null | DropDir>(null)
-
-  const [{ isDragging, draggedBlockPath }, setDraggingState] = useRecoilState(
-    draggingState
-  )
-
-  useEffect(() => {
-    if (!isDragging || path.startsWith(draggedBlockPath)) {
-      return () => {}
-    }
-
-    const firstBlockInTheGroup = path.split('.').length === 1
-
-    function onTouchMove(draggedBlockCoords: Coords) {
-      const currBlockCoords = elementRef.current?.getBoundingClientRect() as DOMRect
-      const suggestDropDir = getSuggestDropDir(
-        draggedBlockCoords,
-        suggestDropRef.current === null ||
-          suggestDropRef.current === DropDir.Bottom
-          ? currBlockCoords
-          : { x: currBlockCoords.x, y: currBlockCoords.y - BLOCK_HEIGHT },
-        firstBlockInTheGroup
-      )
-
-      if (suggestDropDir !== null && suggestDropRef.current === null) {
-        setSuggestDrop(suggestDropDir)
-
-        dropInfo = {
-          dropDir: suggestDropDir,
-          blockPath: path,
-        }
-      } else if (suggestDropDir === null && suggestDropRef.current !== null) {
-        setSuggestDrop(null)
-        dropInfo = null
-      }
-    }
-
-    const listenerKey = Symbol('list-key')
-    dragListeners[listenerKey] = onTouchMove
-
-    return () => {
-      delete dragListeners[listenerKey]
-      setSuggestDrop(null)
-      dropInfo = null
-    }
-  }, [
-    block,
-    setBlocksState,
-    isDragging,
-    setSuggestDrop,
-    suggestDropRef,
-    elementRef,
-    draggedBlockPath,
-    path,
-    setDraggingState,
-  ])
-
-  const { onDragStart, onDragEnd } = useMemo(
-    () => ({
-      onDragStart: () => {
-        setDraggingState({
-          isDragging: true,
-          draggedBlockPath: path,
-        })
-      },
-      onDragEnd: () => {
-        setDraggingState({
-          isDragging: false,
-          draggedBlockPath: '',
-        })
-
-        if (!dropInfo) {
-          return false
-        }
-
-        setBlocksState((origState) => {
-          const state = cloneDeep(origState)
-
-          const currBlock = get(state, path)
-          let lastBlockInCurrentGroup = currBlock
-          while (lastBlockInCurrentGroup.next) {
-            lastBlockInCurrentGroup = currBlock.next
-          }
-
-          const destinationBlock = get(state, dropInfo?.blockPath ?? '')
-
-          unset(state, path)
-
-          if (dropInfo?.dropDir === DropDir.Top) {
-            currBlock.coords = {
-              x: destinationBlock.coords.x,
-              y: destinationBlock.coords.y - BLOCK_HEIGHT,
-            }
-
-            unset(destinationBlock, 'coords')
-            lastBlockInCurrentGroup.next = destinationBlock
-            set(state, dropInfo.blockPath, currBlock)
-          } else {
-            unset(currBlock, 'coords')
-            if (destinationBlock.next) {
-              lastBlockInCurrentGroup.next = destinationBlock.next
-            }
-            destinationBlock.next = currBlock
-          }
-
-          return state.filter(Boolean)
-        })
-
-        return true
-      },
-    }),
-    [setDraggingState, setBlocksState, path]
-  )
-
-  return {
-    suggestDrop,
-    onDragStart,
-    onDragEnd,
-  }
 }
 
 export function useBlock({
@@ -209,8 +37,9 @@ export function useBlock({
   const touchPointWithinElemRef = useRef<Coords | null>(null)
 
   const elementRef = useRef<SVGPathElement>(null)
+  const [, setDraggingState] = useRecoilState(draggingState)
 
-  const { onDragStart, onDragEnd, suggestDrop } = useSuggestDrop({
+  const { suggestDrop } = useSuggestDrop({
     block,
     path,
     elementRef,
@@ -220,6 +49,13 @@ export function useBlock({
   useLayoutEffect(() => {
     function onTouchMove(e: TouchEvent) {
       const { clientX: touchX, clientY: touchY } = e.touches[0]
+
+      if (!draggingCoordsRef.current) {
+        setDraggingState({
+          isDragging: true,
+          draggedBlockPath: path,
+        })
+      }
 
       const ctm = editorRef.current.getScreenCTM()
 
@@ -238,9 +74,8 @@ export function useBlock({
       }
 
       setDraggingCoords(relativeCoords)
-      Reflect.ownKeys(dragListeners).forEach((key) =>
-        dragListeners[key](globalCoords)
-      )
+      BlockDragState.dragCoords = relativeCoords
+      BlockDragState.notifyOnDrag(globalCoords, path)
     }
 
     function onTouchStart(e: TouchEvent) {
@@ -249,7 +84,6 @@ export function useBlock({
         return
       }
 
-      onDragStart()
       const elemPos = (e.currentTarget as SVGPathElement).getBoundingClientRect()
       const { clientX: touchX, clientY: touchY } = e.touches[0]
 
@@ -266,34 +100,15 @@ export function useBlock({
         return
       }
 
-      const dropped = onDragEnd()
+      setBlocksState((state) => updateStateOnDragEnd(cloneDeep(state), path))
+      setDraggingState({
+        isDragging: false,
+        draggedBlockPath: '',
+      })
 
+      BlockDragState.notifyOnDragEnd()
+      BlockDragState.dragCoords = null
       touchPointWithinElemRef.current = null
-      if (dropped) {
-        setDraggingCoords(null)
-        return
-      }
-
-      const nestedBlock = path.split('.').length > 1
-      // create new block group
-      if (nestedBlock) {
-        setBlocksState((stateOrig) => {
-          const state = cloneDeep(stateOrig)
-          const block = get(state, path) as Block
-          block.coords = draggingCoordsRef.current as Coords
-          state.push(block)
-          unset(state, path)
-          return state
-        })
-      } else {
-        setBlocksState((stateOrig) => {
-          const state = cloneDeep(stateOrig)
-          const block = get(state, path) as Block
-          block.coords = draggingCoordsRef.current as Coords
-          return state
-        })
-      }
-
       setDraggingCoords(null)
     }
 
@@ -303,10 +118,18 @@ export function useBlock({
 
     setTimeout(() => {
       if (elementRef.current) {
-        elementRef.current.addEventListener('touchmove', onTouchMove)
-        elementRef.current.addEventListener('touchstart', onTouchStart)
-        elementRef.current.addEventListener('touchend', onTouchEnd)
-        elementRef.current.addEventListener('touchcancel', onTouchCancel)
+        elementRef.current.addEventListener('touchmove', onTouchMove, {
+          passive: true,
+        })
+        elementRef.current.addEventListener('touchstart', onTouchStart, {
+          passive: true,
+        })
+        elementRef.current.addEventListener('touchend', onTouchEnd, {
+          passive: true,
+        })
+        elementRef.current.addEventListener('touchcancel', onTouchCancel, {
+          passive: true,
+        })
       }
     }, 0)
 
@@ -321,8 +144,7 @@ export function useBlock({
     }
   }, [
     setBlocksState,
-    onDragEnd,
-    onDragStart,
+    setDraggingState,
     draggingCoordsRef,
     path,
     setDraggingCoords,

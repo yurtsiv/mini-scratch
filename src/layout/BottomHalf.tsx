@@ -5,7 +5,7 @@ import { SpriteLibrary } from 'components/SpriteLibrary'
 import React, { useState } from 'react'
 
 export function BottomHalf() {
-  const [view, setView] = useState<'sprites' | 'editor'>('sprites')
+  const [view, setView] = useState<'sprites' | 'editor'>('editor')
 
   return (
     <div className="bottom-half-container">

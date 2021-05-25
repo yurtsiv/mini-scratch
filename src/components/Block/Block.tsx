@@ -15,12 +15,12 @@ import { useBlock } from './useBlock'
 
 import './block.css'
 
-type Props = {
+export type Props = {
   path: string
   setBlocksState: SetterOrUpdater<BlocksState>
   blocksState: BlocksState
   editorRef: RefObject<SVGElement>
-  offset: Coords | null
+  offset?: Coords | null
 }
 
 export function Block({
@@ -40,14 +40,19 @@ export function Block({
     setBlocksState,
   })
 
-  const coords = draggingCoords
-    ? { ...draggingCoords }
-    : block.coords
-    ? { ...block.coords }
-    : {
-        x: 0,
-        y: BLOCK_HEIGHT,
-      }
+  let coords
+  if (draggingCoords) {
+    coords = { ...draggingCoords }
+  } else if (block.coords) {
+    coords = { ...block.coords }
+  } else if (block.libraryBlock) {
+    coords = { x: 0, y: 0 }
+  } else {
+    coords = {
+      x: 0,
+      y: BLOCK_HEIGHT,
+    }
+  }
 
   if (offset && !draggingCoords) {
     coords.x += offset.x
@@ -86,7 +91,7 @@ export function Block({
     </g>
   )
 
-  if (draggingCoords && path.length > 1) {
+  if (draggingCoords) {
     return ReactDOM.createPortal(renderResult, editorRef.current as SVGElement)
   }
 

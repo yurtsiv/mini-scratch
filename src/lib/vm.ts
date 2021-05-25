@@ -100,51 +100,59 @@ const handleEventListeners = (vm, canvas) => {
     dragging = true
   }
 
-  canvas.addEventListener('touchmove', (e) => {
-    const { clientX, clientY } = e.touches[0]
+  canvas.addEventListener(
+    'touchmove',
+    (e) => {
+      const { clientX, clientY } = e.touches[0]
 
-    onStartDrag(e)
+      onStartDrag(e)
 
-    if (!dragging) {
-      return
-    }
+      if (!dragging) {
+        return
+      }
 
-    const spritePosition = getScratchCoords(renderer, rect, clientX, clientY)
-    vm.postSpriteInfo({
-      x: spritePosition[0] + dragOffset[0],
-      y: -(spritePosition[1] + dragOffset[1]),
-      force: true,
-    })
+      const spritePosition = getScratchCoords(renderer, rect, clientX, clientY)
+      vm.postSpriteInfo({
+        x: spritePosition[0] + dragOffset[0],
+        y: -(spritePosition[1] + dragOffset[1]),
+        force: true,
+      })
 
-    const coordinates = {
-      x: clientX,
-      y: clientY,
-      canvasWidth: rect.width,
-      canvasHeight: rect.height,
-    }
+      const coordinates = {
+        x: clientX,
+        y: clientY,
+        canvasWidth: rect.width,
+        canvasHeight: rect.height,
+      }
 
-    vm.postIOData('mouse', coordinates)
-    moved = true
-  })
+      vm.postIOData('mouse', coordinates)
+      moved = true
+    },
+    { passive: true }
+  )
 
-  canvas.addEventListener('touchend', (e) => {
-    const { clientX, clientY } = e.changedTouches[0]
-    const rect = canvas.getBoundingClientRect()
-    const data = {
-      x: clientX,
-      y: clientY,
-      canvasWidth: rect.width,
-      canvasHeight: rect.height,
-    }
+  canvas.addEventListener(
+    'touchend',
+    (e) => {
+      const { clientX, clientY } = e.changedTouches[0]
+      const rect = canvas.getBoundingClientRect()
+      const data = {
+        x: clientX,
+        y: clientY,
+        canvasWidth: rect.width,
+        canvasHeight: rect.height,
+      }
 
-    if (!moved) {
-      vm.postIOData('mouse', { ...data, isDown: true })
-    }
+      if (!moved) {
+        vm.postIOData('mouse', { ...data, isDown: true })
+      }
 
-    vm.postIOData('mouse', { ...data, isDown: false })
-    moved = false
-    dragging = false
-  })
+      vm.postIOData('mouse', { ...data, isDown: false })
+      moved = false
+      dragging = false
+    },
+    { passive: true }
+  )
 }
 
 export const createVm = ({ stage }: any) => {

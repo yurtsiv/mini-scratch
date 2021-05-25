@@ -14,6 +14,7 @@ export type Block = {
   coords?: Coords
   variant: BlockVariant
   next?: Block
+  libraryBlock?: boolean
 }
 
 export type BlocksState = Block[]
@@ -52,6 +53,30 @@ export const blocksState = atom<BlocksState>({
           variant: BlockVariant.Move,
         },
       },
+    },
+    {
+      id: 5,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 1 },
+    },
+    {
+      id: 6,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 2 },
+    },
+    {
+      id: 7,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 3 },
+    },
+    {
+      id: 8,
+      libraryBlock: true,
+      variant: BlockVariant.Move,
+      config: { steps: 4 },
     },
   ],
 })
