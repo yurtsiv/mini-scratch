@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 
+import { BLOCK_SCALE } from '../const'
+
 type Props = {
   onApplyChange: () => void
   onChange: (v: number) => void
@@ -10,7 +12,7 @@ type Props = {
 export function ParamInput({ onApplyChange, onChange, value }: Props) {
   const textBoxRef = useRef<any | null>(null)
   const [showInput, setShowInput] = useState(false)
-  const textWidth = `${value}`.length * 10
+  const textWidth = `${value}`.length * 9
 
   useEffect(() => {
     function onFocus() {
@@ -37,9 +39,10 @@ export function ParamInput({ onApplyChange, onChange, value }: Props) {
         onChange={(e) => onChange(+e.target.value)}
         className="param-input"
         style={{
-          top: textBoxCoords.top + 7,
+          top: textBoxCoords.top + 5,
           left: textBoxCoords.left + 11,
-          width: textWidth,
+          width: textWidth * BLOCK_SCALE,
+          fontSize: `${12 * BLOCK_SCALE}pt`,
         }}
         value={value}
       />,

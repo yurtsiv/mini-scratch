@@ -12,6 +12,7 @@
 }
 
 .resize-bar {
+  z-index: 100;
   cursor: pointer;
   width: 40px;
   height: 12px;

@@ -4,6 +4,7 @@ import React, { SVGProps, useCallback } from 'react'
 import { SetterOrUpdater } from 'recoil'
 import { Block, BlockPath, BlocksState } from 'state/scriptEditor'
 
+import { BLOCK_SCALE } from '../const'
 import { Move } from './Move'
 
 const variantToComponent = {
@@ -16,7 +17,10 @@ interface Props extends SVGProps<SVGGElement> {
   setBlocksState: SetterOrUpdater<BlocksState>
 }
 
-function VariantC({ block, path, setBlocksState, ...props }: Props, ref: any) {
+function VariantC(
+  { block, path, setBlocksState, transform, ...props }: Props,
+  ref: any
+) {
   const Comp = variantToComponent[block.variant]
 
   const setConfig = useCallback(
@@ -31,7 +35,13 @@ function VariantC({ block, path, setBlocksState, ...props }: Props, ref: any) {
   )
 
   return (
-    <Comp setConfig={setConfig} config={block.config} ref={ref} {...props} />
+    <Comp
+      setConfig={setConfig}
+      config={block.config}
+      ref={ref}
+      transform={`${transform ? transform : ''} scale(${BLOCK_SCALE})`}
+      {...props}
+    />
   )
 }
 
