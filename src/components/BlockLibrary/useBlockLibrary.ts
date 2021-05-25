@@ -1,3 +1,4 @@
+import { blockDefaultWidth } from 'components/Block/Variants/const'
 import { BLOCK_HEIGHT } from 'components/Block/const'
 import { BlockDragState } from 'components/Block/dragListeners'
 import { useSvgScroll } from 'lib/hooks/useSvgScroll'
@@ -12,11 +13,18 @@ export function useBlockLibrary() {
   const [blocksState, setBlocksState] = useRecoilState(blocksStateRecoil)
   const blockLibRef = useRef<SVGGElement>(null)
 
-  const libraryBlocks = useMemo(
+  const { blocks: libraryBlocks } = useMemo(
     () =>
       sortBy(
         Object.values(blocksState).filter((block) => !!block.libraryBlock),
         'index'
+      ).reduce(
+        (acc: any, nextBlock) => {
+          acc.blocks.push([nextBlock, acc.offset])
+          acc.offset += blockDefaultWidth[nextBlock.variant] + 3
+          return acc
+        },
+        { blocks: [], offset: 0 }
       ),
     [blocksState]
   )

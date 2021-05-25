@@ -6,9 +6,13 @@ import { Block, BlockPath, BlocksState } from 'state/scriptEditor'
 
 import { BLOCK_SCALE } from '../const'
 import { Move } from './Move'
+import { TurnLeft } from './TurnLeft'
+import { TurnRight } from './TurnRight'
 
 const variantToComponent = {
   [BlockVariant.Move]: Move,
+  [BlockVariant.TurnRight]: TurnRight,
+  [BlockVariant.TurnLeft]: TurnLeft,
 }
 
 interface Props extends SVGProps<SVGGElement> {
@@ -37,7 +41,7 @@ function VariantC(
   return (
     <Comp
       setConfig={setConfig}
-      config={block.config}
+      config={block.config as any}
       ref={ref}
       transform={`${transform ? transform : ''} scale(${BLOCK_SCALE})`}
       {...props}

@@ -7,9 +7,10 @@ type Props = {
   onApplyChange: () => void
   onChange: (v: number) => void
   value: number
+  offsetX: number
 }
 
-export function ParamInput({ onApplyChange, onChange, value }: Props) {
+export function ParamInput({ onApplyChange, onChange, value, offsetX }: Props) {
   const textBoxRef = useRef<any | null>(null)
   const [showInput, setShowInput] = useState(false)
   const textWidth = `${value}`.length * 9
@@ -53,7 +54,7 @@ export function ParamInput({ onApplyChange, onChange, value }: Props) {
   return (
     <>
       {textInput}
-      <g transform="translate(60, 10)">
+      <g transform={`translate(${offsetX}, 10)`}>
         <a ref={textBoxRef} href="#0">
           <path
             stroke="#3373CC"

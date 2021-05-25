@@ -8,8 +8,6 @@ type Props = {
   editorRef: RefObject<SVGElement>
 }
 
-const BLOCK_WIDTH = 110
-
 export function BlockLibrary({ editorRef }: Props) {
   const {
     blockLibRef,
@@ -24,7 +22,7 @@ export function BlockLibrary({ editorRef }: Props) {
     <g className="block-lib-container" ref={blockLibRef}>
       <rect width="100%" height="80" fill={highlighted ? 'red' : '#eee'} />
       <g transform={`translate(${scrollX}, 0)`}>
-        {libraryBlocks.map((block, idx) => (
+        {libraryBlocks.map(([block, offsetX]: any) => (
           <Block
             key={block.id}
             blocksState={blocksState}
@@ -32,7 +30,7 @@ export function BlockLibrary({ editorRef }: Props) {
             setBlocksState={setBlocksState}
             path={block.id}
             offset={{
-              x: idx * BLOCK_WIDTH,
+              x: offsetX,
               y: 10,
             }}
           />
