@@ -3,9 +3,20 @@ import { ScriptIcon } from 'components/Icons/ScriptIcon'
 import { ScriptEditor } from 'components/ScriptEditor'
 import { SpriteLibrary } from 'components/SpriteLibrary'
 import React, { useState } from 'react'
+import { useRecoilState } from 'recoil'
+import { easterEggOnState } from 'state/scriptEditor'
 
 export function BottomHalf() {
   const [view, setView] = useState<'sprites' | 'editor'>('editor')
+  const [easterEggOn] = useRecoilState(easterEggOnState)
+
+  if (easterEggOn) {
+    return (
+      <div className="bottom-half-container">
+        <ScriptEditor />
+      </div>
+    )
+  }
 
   return (
     <div className="bottom-half-container">

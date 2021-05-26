@@ -1,4 +1,4 @@
-import { isEmpty, merge } from 'lodash'
+import { merge } from 'lodash'
 import { Block, TargetBlocksState } from 'state/scriptEditor'
 
 import {
@@ -261,9 +261,6 @@ export function refreshVmProject(blocksState: TargetBlocksState, vm: any) {
 
   if (editingTarget) {
     const blocks = getTargetBlocks(blocksState)
-    if (isEmpty(blocks)) {
-      return
-    }
 
     vm.runtime.targets.forEach((target: any) => {
       if (target.id === editingTarget) {

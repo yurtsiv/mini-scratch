@@ -9,16 +9,16 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   BlockPath,
   blocksState as blocksStateRecoil,
-  editingTargetBlocksState,
   editingTargetState,
 } from 'state/scriptEditor'
 
 export function useBlockLibrary() {
   const [highlighted, setHighlghited] = useState(false)
   const editingTarget = useRecoilValue(editingTargetState)
-  const editingTargetBlocks = useRecoilValue(editingTargetBlocksState)
-  const [, setBlocksState] = useRecoilState(blocksStateRecoil)
+  const [blocksState, setBlocksState] = useRecoilState(blocksStateRecoil)
   const blockLibRef = useRef<SVGGElement>(null)
+
+  const editingTargetBlocks = blocksState[editingTarget]
 
   const { blocks: libraryBlocks } = useMemo(
     () =>

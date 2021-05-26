@@ -33,8 +33,8 @@ export function ControlBtn() {
   }, [vm])
 
   return running ? (
-    <PauseIcon className="control-icon" onTouchStart={onStop} />
+    <PauseIcon className="control-btn" onTouchStart={onStop} />
   ) : (
-    <PlayIcon onTouchStart={onStart} className="control-icon" />
+    <PlayIcon onTouchStart={onStart} className="control-btn" />
   )
 }

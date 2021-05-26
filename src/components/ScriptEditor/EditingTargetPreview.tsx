@@ -15,7 +15,7 @@ export function EditingTargetPreview() {
     clickCountRef.current += 1
 
     if (clickCountRef.current === 10) {
-      vm.downloadProjectId('6')
+      vm.downloadProjectId('5')
       setEasterEggOn(true)
       clickCountRef.current = 0
     }

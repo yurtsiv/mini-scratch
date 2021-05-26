@@ -1,5 +1,5 @@
 import { BlockVariant, Coords, VariantConfig } from 'lib/types'
-import { atom, selector } from 'recoil'
+import { atom } from 'recoil'
 
 export enum DropDir {
   Top,
@@ -77,7 +77,7 @@ export const LIBRARY_BLOCKS = {
   },
   '9': {
     id: '9',
-    index: 4,
+    index: 5,
     libraryBlock: true,
     variant: BlockVariant.PlaySound,
     config: {},
@@ -87,18 +87,4 @@ export const LIBRARY_BLOCKS = {
 export const blocksState = atom<BlocksState>({
   key: 'scriptEditorBlocksState',
   default: {},
-})
-
-export const editingTargetBlocksState = selector({
-  key: 'editingTargetBlocksState',
-  get: ({ get }) => {
-    const editingTarget = get(editingTargetState)
-
-    if (!editingTarget) {
-      return null
-    }
-
-    const allBlocks = get(blocksState)
-    return allBlocks[editingTarget]
-  },
 })

@@ -1,5 +1,11 @@
-.control-icon {
+.control-btn {
   position: absolute;
   top: 5px;
   left: 5px;
+}
+
+.reset-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }

@@ -112,6 +112,7 @@ export function useBlock({
       setBlocksState((state: any) =>
         updateStateOnDragEnd(cloneDeep(state), path)
       )
+
       setDraggingState({
         isDragging: false,
         draggedBlockPath: '',
@@ -147,6 +148,7 @@ export function useBlock({
     const svgPath = elementRef.current
     return () => {
       if (svgPath) {
+        console.log('UNREGISTERING')
         svgPath.removeEventListener('touchmove', onTouchMove)
         svgPath.removeEventListener('touchstart', onTouchStart)
         svgPath.removeEventListener('touchend', onTouchEnd)

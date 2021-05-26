@@ -1,6 +1,7 @@
 import { Block } from 'components/Block/Block'
+import { useVM } from 'lib/vm'
 import { cloneDeep } from 'lodash'
-import React, { RefObject } from 'react'
+import React, { RefObject, useCallback } from 'react'
 
 import './style.css'
 import { useBlockLibrary } from './useBlockLibrary'
@@ -10,8 +11,8 @@ type Props = {
 }
 
 export function BlockLibrary({ editorRef }: Props) {
+  const vm = useVM()
   const {
-    editingTarget,
     blockLibRef,
     editingTargetBlocks,
     setBlocksState,
@@ -20,13 +21,17 @@ export function BlockLibrary({ editorRef }: Props) {
     scrollX,
   } = useBlockLibrary()
 
-  function changeBlocksState(newStateGetter: any) {
-    setBlocksState((origState) => {
-      const state = cloneDeep(origState)
-      state[editingTarget] = newStateGetter(origState[editingTarget])
-      return state
-    })
-  }
+  const changeBlocksState = useCallback(
+    (newStateGetter: any) => {
+      setBlocksState((origState) => {
+        const state = cloneDeep(origState)
+        const targetId = vm.editingTarget.id
+        state[targetId] = newStateGetter(origState[targetId])
+        return state
+      })
+    },
+    [setBlocksState, vm]
+  )
 
   if (!editingTargetBlocks) {
     return null
