@@ -5,8 +5,7 @@ import { Coords } from 'lib/types'
 import { get } from 'lodash'
 import React, { RefObject } from 'react'
 import ReactDOM from 'react-dom'
-import { SetterOrUpdater } from 'recoil'
-import { Block as BlockT, BlocksState, DropDir } from 'state/scriptEditor'
+import { Block as BlockT, DropDir, TargetBlocksState } from 'state/scriptEditor'
 
 import { PlaceholderBlock } from './PlaceholderBlock'
 import { Variant } from './Variants/Variant'
@@ -17,8 +16,8 @@ import './block.css'
 
 export type Props = {
   path: string
-  setBlocksState: SetterOrUpdater<BlocksState>
-  blocksState: BlocksState
+  setBlocksState: (newState: any) => void
+  blocksState: TargetBlocksState
   editorRef: RefObject<SVGElement>
   offset?: Coords | null
 }

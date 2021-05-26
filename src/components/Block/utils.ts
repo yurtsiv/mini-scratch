@@ -1,6 +1,11 @@
 import { Coords } from 'lib/types'
 import { cloneDeep, get, unset } from 'lodash'
-import { Block, BlockPath, BlocksState, DropDir } from 'state/scriptEditor'
+import {
+  Block,
+  BlockPath,
+  DropDir,
+  TargetBlocksState,
+} from 'state/scriptEditor'
 
 import { BLOCK_HEIGHT } from './const'
 import { BlockDragState } from './dragListeners'
@@ -34,7 +39,7 @@ export function getSuggestDropDir(
   return null
 }
 
-function createNewLibraryBlock(state: BlocksState, block: Block) {
+function createNewLibraryBlock(state: TargetBlocksState, block: Block) {
   const newLibBlock = cloneDeep(block)
   newLibBlock.id = `${Date.now()}`
   state[newLibBlock.id] = newLibBlock
@@ -43,7 +48,7 @@ function createNewLibraryBlock(state: BlocksState, block: Block) {
 }
 
 function snapBlockIntoSuggestedPlace(
-  state: BlocksState,
+  state: TargetBlocksState,
   block: Block,
   path: BlockPath
 ) {
@@ -78,7 +83,10 @@ function snapBlockIntoSuggestedPlace(
   return state
 }
 
-export function updateStateOnDragEnd(state: BlocksState, path: BlockPath) {
+export function updateStateOnDragEnd(
+  state: TargetBlocksState,
+  path: BlockPath
+) {
   const block = get(state, path)
 
   if (block.libraryBlock) {

@@ -1,8 +1,7 @@
 import { BlockVariant, VariantConfig } from 'lib/types'
 import { cloneDeep, set } from 'lodash'
 import React, { SVGProps, useCallback } from 'react'
-import { SetterOrUpdater } from 'recoil'
-import { Block, BlockPath, BlocksState } from 'state/scriptEditor'
+import { Block, BlockPath } from 'state/scriptEditor'
 
 import { BLOCK_SCALE } from '../const'
 import { GoToRandom } from './GoToRandom'
@@ -20,7 +19,7 @@ const variantToComponent = {
 interface Props extends SVGProps<SVGGElement> {
   block: Block
   path: BlockPath
-  setBlocksState: SetterOrUpdater<BlocksState>
+  setBlocksState: (newState: any) => void
 }
 
 function VariantC(
@@ -31,7 +30,7 @@ function VariantC(
 
   const setConfig = useCallback(
     (config: VariantConfig) => {
-      setBlocksState((origState) => {
+      setBlocksState((origState: any) => {
         const state = cloneDeep(origState)
         set(state, `${path}.config`, config)
         return state

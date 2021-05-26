@@ -2,8 +2,13 @@ import { useRefState } from 'lib/hooks/useRefState'
 import { Coords } from 'lib/types'
 import { cloneDeep } from 'lodash'
 import { useRef, useLayoutEffect, RefObject } from 'react'
-import { SetterOrUpdater, useRecoilState } from 'recoil'
-import { Block, BlocksState, draggingState, DropDir } from 'state/scriptEditor'
+import { useRecoilState } from 'recoil'
+import {
+  Block,
+  draggingState,
+  DropDir,
+  TargetBlocksState,
+} from 'state/scriptEditor'
 
 import { BlockDragState } from './dragListeners'
 import { useSuggestDrop } from './useSuggestDrop'
@@ -11,9 +16,9 @@ import { updateStateOnDragEnd } from './utils'
 
 type Params = {
   editorRef: any
-  blocksState: BlocksState
+  blocksState: TargetBlocksState
   block: Block
-  setBlocksState: SetterOrUpdater<BlocksState>
+  setBlocksState: (newState: any) => void
   path: string
 }
 

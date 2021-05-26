@@ -1,4 +1,5 @@
 import { Block } from 'components/Block/Block'
+import { cloneDeep } from 'lodash'
 import React, { RefObject } from 'react'
 
 import './style.css'
@@ -10,13 +11,26 @@ type Props = {
 
 export function BlockLibrary({ editorRef }: Props) {
   const {
+    editingTarget,
     blockLibRef,
-    blocksState,
+    editingTargetBlocks,
     setBlocksState,
     libraryBlocks,
     highlighted,
     scrollX,
   } = useBlockLibrary()
+
+  function changeBlocksState(newStateGetter: any) {
+    setBlocksState((origState) => {
+      const state = cloneDeep(origState)
+      state[editingTarget] = newStateGetter(origState[editingTarget])
+      return state
+    })
+  }
+
+  if (!editingTargetBlocks) {
+    return null
+  }
 
   return (
     <g className="block-lib-container" ref={blockLibRef}>
@@ -25,9 +39,9 @@ export function BlockLibrary({ editorRef }: Props) {
         {libraryBlocks.map(([block, offsetX]: any) => (
           <Block
             key={block.id}
-            blocksState={blocksState}
+            blocksState={editingTargetBlocks}
             editorRef={editorRef}
-            setBlocksState={setBlocksState}
+            setBlocksState={changeBlocksState}
             path={block.id}
             offset={{
               x: offsetX,

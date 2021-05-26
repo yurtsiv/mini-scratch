@@ -5,18 +5,27 @@ import { useSvgScroll } from 'lib/hooks/useSvgScroll'
 import { Coords } from 'lib/types'
 import { sortBy } from 'lodash'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useRecoilState } from 'recoil'
-import { BlockPath, blocksState as blocksStateRecoil } from 'state/scriptEditor'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import {
+  BlockPath,
+  blocksState as blocksStateRecoil,
+  editingTargetBlocksState,
+  editingTargetState,
+} from 'state/scriptEditor'
 
 export function useBlockLibrary() {
   const [highlighted, setHighlghited] = useState(false)
-  const [blocksState, setBlocksState] = useRecoilState(blocksStateRecoil)
+  const editingTarget = useRecoilValue(editingTargetState)
+  const editingTargetBlocks = useRecoilValue(editingTargetBlocksState)
+  const [, setBlocksState] = useRecoilState(blocksStateRecoil)
   const blockLibRef = useRef<SVGGElement>(null)
 
   const { blocks: libraryBlocks } = useMemo(
     () =>
       sortBy(
-        Object.values(blocksState).filter((block) => !!block.libraryBlock),
+        Object.values(editingTargetBlocks ?? {}).filter(
+          (block) => !!block.libraryBlock
+        ),
         'index'
       ).reduce(
         (acc: any, nextBlock) => {
@@ -26,7 +35,7 @@ export function useBlockLibrary() {
         },
         { blocks: [], offset: 0 }
       ),
-    [blocksState]
+    [editingTargetBlocks]
   )
 
   useLayoutEffect(() => {
@@ -71,7 +80,8 @@ export function useBlockLibrary() {
   const { scrollX } = useSvgScroll({ elemRef: blockLibRef })
 
   return {
-    blocksState,
+    editingTarget,
+    editingTargetBlocks,
     setBlocksState,
     libraryBlocks,
     blockLibRef,

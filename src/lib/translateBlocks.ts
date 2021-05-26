@@ -1,30 +1,64 @@
 import { isEmpty, merge } from 'lodash'
-import { Block, BlocksState } from 'state/scriptEditor'
-
-import { EMPTY_STAGE_TARGET } from './const'
+import { Block, TargetBlocksState } from 'state/scriptEditor'
 
 import { BlockVariant, MoveConfig } from './types'
 
 const genBlockId = () => Math.random().toString(36)
 
-const variantToBlock: any = {
-  [BlockVariant.Move]: (config: MoveConfig) => ({
-    opcode: 'motion_movesteps',
-    inputs: {
-      STEPS: [1, [4, config.steps]],
+const numFieldBlock = (value: number) => ({
+  id: genBlockId(),
+  fields: {
+    NUM: {
+      name: 'NUM',
+      value,
     },
-  }),
+  },
+  inputs: {},
+  opcode: 'math_number',
+  topLevel: false,
+})
+
+const variantToBlock: any = {
+  [BlockVariant.Move]: (
+    config: MoveConfig,
+    blockId: string,
+    parent: string,
+    next: string
+  ) => {
+    const numField = numFieldBlock(config.steps) as any
+    numField.parent = blockId
+
+    return {
+      [numField.id]: numField,
+      [blockId]: {
+        id: blockId,
+        opcode: 'motion_movesteps',
+        inputs: {
+          STEPS: {
+            name: 'STEPS',
+            block: numField.id,
+            shadow: numField.id,
+          },
+        },
+        fields: {},
+        parent,
+        next,
+      },
+    }
+  },
 }
 
 const whenFlagClicked = (): any => ({
   opcode: 'event_whenflagclicked',
   parent: null,
   topLevel: true,
+  fields: {},
 })
 
 function blockToVm(block: Block) {
-  let parentId = genBlockId()
-  let nextId = genBlockId()
+  const rootId = genBlockId()
+  let parentId: string | undefined = genBlockId()
+  let nextId: string | undefined = rootId
 
   const rootBlock = {
     id: parentId,
@@ -32,19 +66,25 @@ function blockToVm(block: Block) {
   }
   rootBlock.next = nextId
 
-  const res = { [parentId]: rootBlock }
+  let res = { [parentId]: rootBlock }
 
   let nextBlock: Block | undefined = block
   while (nextBlock) {
-    const vmBlock = variantToBlock[nextBlock.variant](nextBlock.config)
-    vmBlock.parent = parentId
-    res[nextId] = vmBlock
+    const blockId = nextId
+    nextId = nextBlock.next ? genBlockId() : undefined
 
-    parentId = nextId
-    nextId = genBlockId()
+    const blocks = variantToBlock[nextBlock.variant](
+      nextBlock.config,
+      blockId,
+      parentId,
+      nextId
+    )
 
-    if (nextBlock.next) {
-      vmBlock.next = nextId
+    parentId = blockId
+
+    res = {
+      ...res,
+      ...blocks,
     }
 
     nextBlock = nextBlock?.next
@@ -53,14 +93,14 @@ function blockToVm(block: Block) {
   return res
 }
 
-function getTargetBlocks(blocksState: BlocksState) {
+function getTargetBlocks(blocksState: TargetBlocksState) {
   return Object.values(blocksState)
     .filter((block) => !block.libraryBlock)
     .map(blockToVm)
     .reduce(merge, {})
 }
 
-export function refreshVmProject(blocksState: BlocksState, vm: any) {
+export function refreshVmProject(blocksState: TargetBlocksState, vm: any) {
   const editingTarget = vm.editingTarget?.id
 
   if (editingTarget) {
@@ -69,25 +109,18 @@ export function refreshVmProject(blocksState: BlocksState, vm: any) {
       return
     }
 
-    const costume = vm.runtime.targets.find((t: any) => t.id === editingTarget)
-      .sprite.costumes_[0]
+    vm.runtime.targets.forEach((target: any) => {
+      if (target.id === editingTarget) {
+        target.blocks._blocks = blocks
 
-    vm.loadProject({
-      targets: [
-        EMPTY_STAGE_TARGET,
-        {
-          isStage: false,
-          blocks,
-          name: 'Sprite1',
-          costumes: [costume],
-          variables: {},
-          sounds: [],
-        },
-      ],
-      meta: {
-        semver: '3.0.0',
-        vm: '0.2.0-prerelease.20210510162256',
-      },
+        target.blocks._scripts = Object.keys(blocks).filter(
+          (key) => blocks[key].topLevel
+        )
+
+        target.blocks._cache.scripts = {}
+      }
     })
+
+    vm.emitWorkspaceUpdate()
   }
 }

@@ -12,15 +12,24 @@ export function ControlBtn() {
 
   useEffect(() => {
     if (!vm) {
-      return
+      return () => {}
     }
 
-    vm.on('PROJECT_RUN_START', () => {
+    function onStart() {
       setRunning(true)
-    })
-    vm.on('PROJECT_RUN_STOP', () => {
+    }
+
+    function onStop() {
       setRunning(false)
-    })
+    }
+
+    vm.on('PROJECT_RUN_START', onStart)
+    vm.on('PROJECT_RUN_STOP', onStop)
+
+    return () => {
+      vm.removeListener('PROJECT_RUN_START', onStart)
+      vm.removeListener('PROJECT_RUN_STOP', onStop)
+    }
   }, [vm])
 
   return running ? (

@@ -1,4 +1,4 @@
-export const testProject = {
+export const INITIAL_PROJECT = {
   targets: [
     {
       isStage: true,
@@ -31,27 +31,19 @@ export const testProject = {
       name: 'Sprite1',
       variables: {},
       blocks: {
-        'Y?@w?=v=u_*~D65)gW50': {
-          inputs: { STEPS: [1, [4, 10]] },
-          opcode: 'motion_movesteps',
-          parent: 'Z1!./MQN#vLt#h0_t[7n',
-          // shadow: false,
-          // topLevel: false,
-        },
-        // '!PEKu1=,8T#h6c7R:$|O': {
-        //   opcode: 'control_forever',
-        //   next: null,
-        //   parent: 'Z1!./MQN#vLt#h0_t[7n',
-        //   inputs: { SUBSTACK: [2, 'Y?@w?=v=u_*~D65)gW50'] },
-        //   fields: {},
-        //   shadow: false,
-        //   topLevel: false,
-        // },
-        'Z1!./MQN#vLt#h0_t[7n': {
+        '0.jwptgyhzjgp': {
+          fields: {},
+          id: '0.jwptgyhzjgp',
+          next: '0.k7nd9nwzbw',
           opcode: 'event_whenflagclicked',
-          next: 'Y?@w?=v=u_*~D65)gW50',
           parent: null,
           topLevel: true,
+        },
+        '0.k7nd9nwzbw': {
+          fields: {},
+          inputs: { STEPS: [1, [4, 10]] },
+          opcode: 'motion_movesteps',
+          parent: '0.jwptgyhzjgp',
         },
       },
       costumes: [
@@ -60,15 +52,6 @@ export const testProject = {
           name: 'costume1',
           bitmapResolution: 1,
           md5ext: 'bcaaa8547a07cfe572c0967ba829e99d.svg',
-          dataFormat: 'svg',
-          rotationCenterX: 47,
-          rotationCenterY: 55,
-        },
-        {
-          assetId: '11d6c5fbd91e433a1b85a00fd9dd43b6',
-          name: 'costume2',
-          bitmapResolution: 1,
-          md5ext: '11d6c5fbd91e433a1b85a00fd9dd43b6.svg',
           dataFormat: 'svg',
           rotationCenterX: 47,
           rotationCenterY: 55,

@@ -9,8 +9,7 @@ import ScratchStorage from 'scratch-storage'
 import ScratchSVGRenderer from 'scratch-svg-renderer'
 
 import VirtualMachine from '../scratch-vm/src/virtual-machine'
-
-import { EMPTY_STAGE_TARGET } from './const'
+import { INITIAL_PROJECT } from './initialProject'
 
 const ASSET_SERVER = 'https://cdn.assets.scratch.mit.edu/'
 const PROJECT_SERVER = 'https://cdn.projects.scratch.mit.edu/'
@@ -176,13 +175,7 @@ export const createVm = ({ stage }: any) => {
 
   // const projectId = '48042'
   // vm.downloadProjectId(projectId)
-  vm.loadProject({
-    targets: [EMPTY_STAGE_TARGET],
-    meta: {
-      semver: '3.0.0',
-      vm: '0.2.0-prerelease.20210510162256',
-    },
-  })
+  vm.loadProject(INITIAL_PROJECT)
 
   // Instantiate the renderer and connect it to the VM.
   const canvas = document.getElementById('scratch-stage')
