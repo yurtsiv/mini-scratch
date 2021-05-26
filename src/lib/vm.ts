@@ -7,7 +7,8 @@ import AudioEngine from 'scratch-audio'
 import ScratchRender from 'scratch-render/dist/web/scratch-render'
 import ScratchStorage from 'scratch-storage'
 import ScratchSVGRenderer from 'scratch-svg-renderer'
-import VirtualMachine from 'scratch-vm'
+
+import VirtualMachine from '../scratch-vm/src/virtual-machine'
 
 import { EMPTY_STAGE_TARGET } from './const'
 

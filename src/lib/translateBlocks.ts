@@ -1,5 +1,7 @@
-import { concat, isEmpty } from 'lodash'
+import { isEmpty, merge } from 'lodash'
 import { Block, BlocksState } from 'state/scriptEditor'
+
+import { EMPTY_STAGE_TARGET } from './const'
 
 import { BlockVariant, MoveConfig } from './types'
 
@@ -30,13 +32,13 @@ function blockToVm(block: Block) {
   }
   rootBlock.next = nextId
 
-  const res = [rootBlock]
+  const res = { [parentId]: rootBlock }
 
   let nextBlock: Block | undefined = block
   while (nextBlock) {
     const vmBlock = variantToBlock[nextBlock.variant](nextBlock.config)
     vmBlock.parent = parentId
-    res.push(vmBlock)
+    res[nextId] = vmBlock
 
     parentId = nextId
     nextId = genBlockId()
@@ -55,16 +57,37 @@ function getTargetBlocks(blocksState: BlocksState) {
   return Object.values(blocksState)
     .filter((block) => !block.libraryBlock)
     .map(blockToVm)
-    .reduce(concat, [])
+    .reduce(merge, {})
 }
 
 export function refreshVmProject(blocksState: BlocksState, vm: any) {
   const editingTarget = vm.editingTarget?.id
+
   if (editingTarget) {
     const blocks = getTargetBlocks(blocksState)
-
-    if (!isEmpty(blocks)) {
-      vm.shareBlocksToTarget(blocks, vm.editingTarget.id)
+    if (isEmpty(blocks)) {
+      return
     }
+
+    const costume = vm.runtime.targets.find((t: any) => t.id === editingTarget)
+      .sprite.costumes_[0]
+
+    vm.loadProject({
+      targets: [
+        EMPTY_STAGE_TARGET,
+        {
+          isStage: false,
+          blocks,
+          name: 'Sprite1',
+          costumes: [costume],
+          variables: {},
+          sounds: [],
+        },
+      ],
+      meta: {
+        semver: '3.0.0',
+        vm: '0.2.0-prerelease.20210510162256',
+      },
+    })
   }
 }
