@@ -109,7 +109,9 @@ export function useBlock({
         return
       }
 
-      setBlocksState((state) => updateStateOnDragEnd(cloneDeep(state), path))
+      setBlocksState((state: any) =>
+        updateStateOnDragEnd(cloneDeep(state), path)
+      )
       setDraggingState({
         isDragging: false,
         draggedBlockPath: '',

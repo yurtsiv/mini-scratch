@@ -28,6 +28,11 @@ export type DraggingState = {
 
 export type EditingTarget = string
 
+export const easterEggOnState = atom<boolean>({
+  key: 'easterEggOnState',
+  default: false,
+})
+
 export const editingTargetState = atom<EditingTarget>({
   key: 'editingTargetState',
   default: '',

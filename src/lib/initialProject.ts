@@ -30,22 +30,7 @@ export const INITIAL_PROJECT = {
       isStage: false,
       name: 'Sprite1',
       variables: {},
-      blocks: {
-        '0.jwptgyhzjgp': {
-          fields: {},
-          id: '0.jwptgyhzjgp',
-          next: '0.k7nd9nwzbw',
-          opcode: 'event_whenflagclicked',
-          parent: null,
-          topLevel: true,
-        },
-        '0.k7nd9nwzbw': {
-          fields: {},
-          inputs: { STEPS: [1, [4, 10]] },
-          opcode: 'motion_movesteps',
-          parent: '0.jwptgyhzjgp',
-        },
-      },
+      blocks: {},
       costumes: [
         {
           assetId: 'bcaaa8547a07cfe572c0967ba829e99d',

@@ -171,10 +171,8 @@ export const createVm = ({ stage }: any) => {
     [AssetType.ImageVector, AssetType.ImageBitmap, AssetType.Sound],
     getAssetUrl
   )
-  vm.attachStorage(storage)
 
-  // const projectId = '48042'
-  // vm.downloadProjectId(projectId)
+  vm.attachStorage(storage)
   vm.loadProject(INITIAL_PROJECT)
 
   // Instantiate the renderer and connect it to the VM.

@@ -33,3 +33,10 @@ svg {
   outline-color: transparent;
   outline-style: none;
 }
+
+button {
+  padding: 10px 15px;
+  background-color: transparent;
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+}

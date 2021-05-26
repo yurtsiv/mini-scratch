@@ -12,7 +12,7 @@ const canvasHeight = window.screen.height / 2 - 10
 const canvasWidth = window.screen.width
 
 export function Layout() {
-  const [vm, setVm] = useState(null)
+  const [vm, setVm] = useState<any>(null)
 
   useLayoutEffect(() => {
     setVm(createVm({ stage: { width: canvasWidth, height: canvasHeight } }))

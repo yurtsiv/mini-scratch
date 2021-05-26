@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import {
   blocksState as blocksStateRecoil,
+  easterEggOnState,
   editingTargetBlocksState,
   editingTargetState,
   LIBRARY_BLOCKS,
@@ -14,6 +15,7 @@ import {
 } from 'state/scriptEditor'
 
 import { EditingTargetPreview } from './EditingTargetPreview'
+import { ResetEasterEggBtn } from './ResetEasterEggBtn'
 
 import './style.css'
 
@@ -23,7 +25,7 @@ export function ScriptEditor() {
   const [editingTarget, setEditingTarget] = useRecoilState(editingTargetState)
   const editingTargetBlocks = useRecoilValue(editingTargetBlocksState)
   const [blocksState, setBlocksState] = useRecoilState(blocksStateRecoil)
-  console.log(blocksState, editingTarget, editingTargetBlocks)
+  const [easterEggOn] = useRecoilState(easterEggOnState)
 
   function changeBlocksState(newStateGetter: any) {
     setBlocksState((origState) => {
@@ -62,6 +64,10 @@ export function ScriptEditor() {
       vm.removeListener('workspaceUpdate', onWorkspaceUpdate)
     }
   }, [blocksState, setBlocksState, editingTargetBlocks, vm, setEditingTarget])
+
+  if (easterEggOn) {
+    return <ResetEasterEggBtn />
+  }
 
   if (!editingTarget || isEmpty(editingTargetBlocks)) {
     return <h2>Select target</h2>

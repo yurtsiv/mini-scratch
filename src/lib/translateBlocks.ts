@@ -48,25 +48,47 @@ const variantToBlock: any = {
   },
 }
 
-const whenFlagClicked = (): any => ({
+const WHEN_FLAG_CLICKED = {
   opcode: 'event_whenflagclicked',
   parent: null,
   topLevel: true,
   fields: {},
-})
+}
+
+const CONTROL_FOREVER = {
+  fields: {},
+  next: null,
+  opcode: 'control_forever',
+  shadow: false,
+  topLevel: false,
+}
 
 function blockToVm(block: Block) {
-  const rootId = genBlockId()
-  let parentId: string | undefined = genBlockId()
-  let nextId: string | undefined = rootId
-
-  const rootBlock = {
-    id: parentId,
-    ...whenFlagClicked(),
+  const rootBlock: any = {
+    ...WHEN_FLAG_CLICKED,
+    id: genBlockId(),
   }
-  rootBlock.next = nextId
 
-  let res = { [parentId]: rootBlock }
+  let nextId: string | undefined = genBlockId()
+
+  const controlForever = {
+    ...CONTROL_FOREVER,
+    id: genBlockId(),
+    inputs: {
+      SUBSTACK: {
+        name: 'SUBSTACK',
+        block: nextId,
+        shadow: null,
+      },
+    },
+    parent: rootBlock.id,
+  }
+
+  rootBlock.next = controlForever.id
+
+  let res = { [rootBlock.id]: rootBlock, [controlForever.id]: controlForever }
+
+  let parentId: string | undefined = controlForever.id
 
   let nextBlock: Block | undefined = block
   while (nextBlock) {
