@@ -11,4 +11,5 @@ export const blockDefaultWidth = {
   [BlockVariant.TurnRight]: 133,
   [BlockVariant.TurnLeft]: 133,
   [BlockVariant.GoToRandom]: 80,
+  [BlockVariant.PlaySound]: 65,
 }

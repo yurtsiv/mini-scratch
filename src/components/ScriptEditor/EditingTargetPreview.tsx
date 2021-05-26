@@ -26,7 +26,7 @@ export function EditingTargetPreview() {
   }
 
   const assetMd5 = vm.runtime.targets.find((t: any) => t.id === editingTarget)
-    .sprite.costumes_[0].md5
+    ?.sprite?.costumes_?.[0]?.md5
 
   return (
     <img

@@ -198,6 +198,8 @@ export const createVm = ({ stage }: any) => {
   // Run threads
   vm.start()
 
+  window.vm = vm
+
   return vm
 }
 

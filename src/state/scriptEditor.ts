@@ -75,6 +75,13 @@ export const LIBRARY_BLOCKS = {
     variant: BlockVariant.GoToRandom,
     config: {},
   },
+  '9': {
+    id: '9',
+    index: 4,
+    libraryBlock: true,
+    variant: BlockVariant.PlaySound,
+    config: {},
+  },
 }
 
 export const blocksState = atom<BlocksState>({

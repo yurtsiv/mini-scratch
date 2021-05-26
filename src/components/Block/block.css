@@ -7,6 +7,10 @@
   fill: #4c97ff;
 }
 
+.sound-block-path {
+  fill: rgb(207, 99, 207);
+}
+
 .group-highlighted path {
   stroke: red;
 }

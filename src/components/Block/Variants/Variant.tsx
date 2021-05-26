@@ -6,6 +6,7 @@ import { Block, BlockPath } from 'state/scriptEditor'
 import { BLOCK_SCALE } from '../const'
 import { GoToRandom } from './GoToRandom'
 import { Move } from './Move'
+import { PlaySound } from './PlaySound'
 import { TurnLeft } from './TurnLeft'
 import { TurnRight } from './TurnRight'
 
@@ -14,6 +15,7 @@ const variantToComponent = {
   [BlockVariant.TurnRight]: TurnRight,
   [BlockVariant.TurnLeft]: TurnLeft,
   [BlockVariant.GoToRandom]: GoToRandom,
+  [BlockVariant.PlaySound]: PlaySound,
 }
 
 interface Props extends SVGProps<SVGGElement> {
