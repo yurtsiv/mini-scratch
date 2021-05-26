@@ -12,9 +12,5 @@ export function ResetEasterEggBtn() {
     vm.loadProject(INITIAL_PROJECT).then(() => setEasterEggOn(false))
   }
 
-  return (
-    <button className="reset-easter-egg-btn" onClick={() => resetEasterEgg()}>
-      BACK TO NORMAL
-    </button>
-  )
+  return <button onClick={() => resetEasterEgg()}>BACK TO NORMAL</button>
 }

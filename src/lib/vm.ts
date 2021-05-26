@@ -7,8 +7,8 @@ import AudioEngine from 'scratch-audio'
 import ScratchRender from 'scratch-render/dist/web/scratch-render'
 import ScratchStorage from 'scratch-storage'
 import ScratchSVGRenderer from 'scratch-svg-renderer'
+import VirtualMachine from 'scratch-vm/src/virtual-machine'
 
-import VirtualMachine from '../scratch-vm/src/virtual-machine'
 import { INITIAL_PROJECT } from './initialProject'
 
 const ASSET_SERVER = 'https://cdn.assets.scratch.mit.edu/'

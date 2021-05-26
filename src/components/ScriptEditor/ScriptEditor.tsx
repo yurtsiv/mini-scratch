@@ -66,15 +66,23 @@ export function ScriptEditor() {
   }, [blocksState, setBlocksState, editingTargetBlocks, vm, setEditingTarget])
 
   if (easterEggOn) {
-    return <ResetEasterEggBtn />
+    return (
+      <div className="script-editor-container">
+        <ResetEasterEggBtn />
+      </div>
+    )
   }
 
   if (!editingTarget || isEmpty(editingTargetBlocks)) {
-    return <h2>Select target</h2>
+    return (
+      <div className="script-editor-container">
+        <h2>Select target</h2>
+      </div>
+    )
   }
 
   return (
-    <>
+    <div className="script-editor-container">
       <EditingTargetPreview />
       <svg ref={editorRef} width="100%" height="100%">
         {Object.entries(editingTargetBlocks as TargetBlocksState).map(
@@ -92,6 +100,6 @@ export function ScriptEditor() {
         )}
         <BlockLibrary editorRef={editorRef} />
       </svg>
-    </>
+    </div>
   )
 }
