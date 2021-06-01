@@ -117,7 +117,7 @@ const soundBlock = () => {
   }
 }
 
-const variantToBlock: any = {
+export const variantToBlock: any = {
   [BlockVariant.Move]: (
     config: MoveConfig,
     blockId: string,
@@ -249,7 +249,7 @@ function blockToVm(block: Block) {
   return res
 }
 
-function getTargetBlocks(blocksState: TargetBlocksState) {
+export function getTargetBlocks(blocksState: TargetBlocksState) {
   return Object.values(blocksState)
     .filter((block) => !block.libraryBlock)
     .map(blockToVm)

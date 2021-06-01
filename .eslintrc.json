@@ -1,7 +1,7 @@
 {
   "extends": "vazco",
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "jest"],
   "rules": {
     "quotes": ["error", "single"],
     "prettier/prettier": "off",
@@ -9,5 +9,8 @@
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "jsx-a11y/no-autofocus": "off"
+  },
+  "env": {
+    "jest/globals": true
   }
 }
