@@ -5,8 +5,8 @@
   "dependencies": {
     "clsx": "^1.1.1",
     "lodash": "^4.17.21",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "recoil": "^0.1.3",
     "scratch-audio": "0.1.0-prerelease.20200528195344",
     "scratch-render": "latest",
@@ -22,7 +22,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src/**/*.{ts,tsx}",
-    "deploy": "./scripts/deploy.sh"
+    "deploy": "./scripts/deploy.sh",
+    "e2e": "cd e2e && jest"
   },
   "eslintConfig": {
     "extends": [
@@ -43,9 +44,8 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.10",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@types/enzyme": "^3.10.8",
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.168",
     "@types/node": "^12.20.13",
@@ -54,6 +54,8 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "babel-eslint": "^10.1.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-config-vazco": "^6.1.1",
@@ -65,9 +67,16 @@
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^6.0.0",
+    "jest-canvas-mock": "^2.3.1",
+    "jest-environment-enzyme": "^7.1.2",
+    "jest-enzyme": "^7.1.2",
+    "jest-puppeteer": "^5.0.4",
+    "jest-webgl-canvas-mock": "^0.2.3",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
+    "puppeteer": "^10.0.0",
     "react-scripts": "4.0.3",
+    "react-test-renderer": "^17.0.2",
     "typescript": "^4.2.4"
   },
   "husky": {

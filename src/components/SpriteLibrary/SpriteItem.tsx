@@ -13,6 +13,7 @@ export function SpriteItem({ sprite, onSpriteSelected }: Props) {
 
   return (
     <img
+      data-testid="sprite-item"
       className="sprite-item"
       alt={`sprite-${sprite}`}
       src={getSpriteUrl(sprite.costumes[0].md5ext)}

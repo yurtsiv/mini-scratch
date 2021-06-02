@@ -3,12 +3,10 @@ import { RecoilRoot } from 'recoil'
 
 import { Layout } from './layout'
 
-function App() {
+export function App() {
   return (
     <RecoilRoot>
       <Layout />
     </RecoilRoot>
   )
 }
-
-export default App

@@ -161,7 +161,7 @@ const handleEventListeners = (vm, canvas) => {
   )
 }
 
-export const createVm = ({ stage }: any) => {
+export const createVm = ({ canvas, stage }: any) => {
   const vm = new VirtualMachine()
 
   const storage = new ScratchStorage()
@@ -176,7 +176,6 @@ export const createVm = ({ stage }: any) => {
   vm.loadProject(INITIAL_PROJECT)
 
   // Instantiate the renderer and connect it to the VM.
-  const canvas = document.getElementById('scratch-stage')
   const renderer = new ScratchRender(canvas)
   renderer.resize(
     stage.width / window.devicePixelRatio,
@@ -199,6 +198,7 @@ export const createVm = ({ stage }: any) => {
   vm.start()
 
   window.vm = vm
+  console.log('VM start')
 
   return vm
 }

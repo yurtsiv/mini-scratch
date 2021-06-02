@@ -23,6 +23,7 @@ export function BottomHalf() {
       {view === 'editor' ? (
         <>
           <ImageIcon
+            data-testid="sprites-lib-button"
             onTouchStart={() => setView('sprites')}
             className="sprites-lib-icon"
           />
@@ -31,6 +32,7 @@ export function BottomHalf() {
       ) : (
         <>
           <ScriptIcon
+            data-testid="script-editor-button"
             className="script-icon"
             onTouchStart={() => setView('editor')}
           />

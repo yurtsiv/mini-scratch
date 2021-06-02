@@ -5,12 +5,14 @@ import { ResetBtn } from './ResetBtn'
 
 import './style.css'
 
-export function Stage() {
+function StageC(props: any, ref: any) {
   return (
     <>
       <ControlBtn />
       <ResetBtn />
-      <canvas id="scratch-stage" />
+      <canvas id="scratch-stage" ref={ref} />
     </>
   )
 }
+
+export const Stage = React.forwardRef(StageC);

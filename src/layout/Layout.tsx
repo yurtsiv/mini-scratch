@@ -1,7 +1,7 @@
 import { Resizeable } from 'components/Resizeable'
 import { Stage } from 'components/Stage'
 import { createVm, VMContext } from 'lib/vm'
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 
 import { BottomHalf } from './BottomHalf'
 import './styles.css'
@@ -13,9 +13,10 @@ const canvasWidth = window.screen.width
 
 export function Layout() {
   const [vm, setVm] = useState<any>(null)
+  const canvasRef = useRef<any>(null);
 
   useLayoutEffect(() => {
-    setVm(createVm({ stage: { width: canvasWidth, height: canvasHeight } }))
+    setVm(createVm({ canvas: canvasRef.current, stage: { width: canvasWidth, height: canvasHeight } }))
   }, [])
 
   return (
@@ -32,7 +33,7 @@ export function Layout() {
           maxHeight={canvasHeight}
           minHeight={MIN_RESIZEABLE_CONTENT_HEIGHT}
         >
-          <Stage />
+          <Stage ref={canvasRef} />
         </Resizeable>
         <div
           style={{
